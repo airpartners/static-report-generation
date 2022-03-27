@@ -1,0 +1,49 @@
+---
+title: "R Summary Stat Graphs"
+author: "Sam Coleman"
+date: "3/27/2022"
+output: 
+  github_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(chron)
+```
+
+```{r}
+df_raw <- read_csv("data/roxbury405March5_24Raw.csv")
+```
+
+```{r}
+df <-
+  df_raw %>% 
+  mutate(
+    day_of_week = weekdays(as.Date(df_raw$timestamp)),
+    day_of_week = factor(day_of_week, ordered = TRUE, levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")),
+    weeks = isoweek(timestamp)
+  )
+```
+
+```{r}
+
+
+df %>% 
+  #group_by(weeks) %>% 
+  ggplot(aes(x = timestamp)) + #, color = day_of_week
+  # geom_point() +
+  geom_smooth(aes(y = pm1, color = "red")) +
+  geom_smooth(aes(y = pm25, color = "blue")) +
+  geom_smooth(aes(y = pm10, color = "green")) +
+  facet_wrap(. ~ weeks, nrow = 4, scale = "free_x") + #scale = "free_x", +
+  #scale_fill_discrete(name = "Particulate Matter", labels = c("PM1", "PM2.5", "PM10"))
+  scale_color_manual(labels = c("PM1", "PM2.5", "PM10"), values = c("red", "blue", "green")) +
+  #scale_x_date()
+  labs(color = "Particulate Matter") +
+  ylab("PM Concentration (µg/m^3)")
+  
+```
+
