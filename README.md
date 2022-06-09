@@ -1,2 +1,3 @@
 # static-report-generation
-Prototyping the static report generation 
+
+Adding new MAIN file.
