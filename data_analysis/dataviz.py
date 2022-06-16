@@ -12,6 +12,9 @@ if not os.environ.get("R_HOME"):
 from rpy2.robjects.packages import importr
 from rpy2.robjects import pandas2ri
 import rpy2.robjects as ro
+from rpy2.robjects.lib import grdevices    
+import IPython
+from PIL import Image
 
 def plot(df, handler, sensor_id, save_prefix=None, smoothed=True, cols=None):
     """
@@ -88,6 +91,17 @@ class OpenAirPlots:
         #create diurnal plot, may take a few seconds to complete
         self.grdevices.png(f"{file_prefix}_diurnal.png", width=width, height=height)
         ro.r.timeVariation(r_df, pollutant = ro.r(pols), normalise = True, main = "Normalized Group of Pollutants Diurnal Profile")
+
+    def displayOpenairPlot(self, func, filename, width, height, res=150, *args, **kwargs):
+        with grdevices.render_to_bytesio(grdevices.png, width=width, height=height, res=res) as img:
+            plot = func(*args, **kwargs)
+        # Display image
+        # image = IPython.display.Image(data=img.getvalue(), format='png', embed=True)
+        # IPython.display.display(image)
+
+        # save the image as PNG
+        img2 = Image.open(img)
+        img2.save(f"{filename}.png")
     
     def polar_plot(self, df, file_prefix, pollutants, width=700, height=700):
         """
@@ -106,5 +120,6 @@ class OpenAirPlots:
 
         #save a polar plot for each pollutant, may take several seconds to complete
         for p in pollutants:
-            self.grdevices.png(f"{file_prefix}_polar_{p}.png", width=width, height=height)
-            ro.r.polarPlot(r_df, pollutant = p, main = f"{p.upper()} Polar Plot")
+            # self.grdevices.png(f"{file_prefix}_polar_{p}.png", width=width, height=height)
+            # ro.r.polarPlot(r_df, pollutant = p, main = f"{p.upper()} Polar Plot")
+            self.displayOpenairPlot(self.openair.polarPlot, filename=f"{file_prefix}_polar_{p}", width=width, height=height, mydata=r_df, pollutant=p)
