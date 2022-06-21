@@ -104,11 +104,16 @@ def wind_polar_plot(data_PM, month, iem_df):
     data_PM = data_PM[data_PM['month'] == month]
 
     # Add wind variables to df
-    data_PM = _replace_with_iem(data_PM, iem_df)
+    # data_PM = _replace_with_iem(data_PM, iem_df)
     
     #df = df.rename(columns={"timestamp_local": "date", "wind_speed": "ws", "wind_dir": "wd"})
     #df.wd = df.wd.replace(0.0, 360.0)
     df = data_PM[['timestamp_local', 'wind_speed', 'wind_dir', 'pm25']]
+    
+    # Remove any points where wind data was unavailable. 
+    df = df[df.wind_speed != 0]
+
+
     # Format the dataPM to be read in R and plot wind data
     air_plt = OpenAirPlots()
     air_plt.polar_plot(df, '2022-04/Graphs/wind_polar_plot/', ['pm25'])

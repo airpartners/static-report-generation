@@ -1,4 +1,5 @@
 from sqlite3 import Timestamp
+from matplotlib.pyplot import axis
 import quantaq
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -395,7 +396,7 @@ class ModPMHandler(DataHandler):
         :param end: (optional datetime) representing UTC time for end of date range
         """
         super().__init__(
-            data_cols=["neph_pm1", "neph_pm10", "neph_pm25", "opc_pm1", "opc_pm10", "opc_pm25"],
+            data_cols=["pm1", "pm10", "pm25"],
             # "neph_bin0", "neph_bin1", "neph_bin2", "neph_bin3", 
             # "neph_bin4", "neph_bin5", "neph_pm1", "neph_pm10", 
             # "neph_pm25", "opc_bin0", "opc_bin1", "opc_bin10",
@@ -411,7 +412,7 @@ class ModPMHandler(DataHandler):
         )
 
 
-    def _clean_mod_pm(self, df, smoothed=True, nested=False):
+    def _clean_mod_pm(self, df, smoothed=True, raw=False):
         """
         Flatten dataframe received from the MOD-PM sensors. This method is a helper function for data fetched via
         REST API. only data from the API have nested columns, the CSV's do not.
@@ -424,7 +425,7 @@ class ModPMHandler(DataHandler):
         #replace timestamp info
         df = self.convert_timestamps(df)
 
-        if nested:
+        if raw:
             #create column names based on all keys within the dictionary
             neph_cols = [f"neph_{k}" for k in df['neph'][0].keys()]
             opc_cols = [f"opc_{k}" for k in df['opc'][0].keys()]
@@ -437,12 +438,14 @@ class ModPMHandler(DataHandler):
             #drop columns that contain dictionaries after flattening
             df = df.drop(['neph', 'opc', 'geo', 'met'], axis=1)
 
-        # Remove all bin columns from dataframe. 
-        df = df[df.columns.drop(list(df.filter(regex='bin')))]
+            # Remove all bin columns from dataframe. 
+            df = df[df.columns.drop(list(df.filter(regex='bin')))]
 
-
-        # Remove other unused columns from dataframe
-        df = df.drop(['timestamp_local', 'url', 'opc_rh', 'opc_temp', 'pressure'], axis = 1)
+            # Remove other unused columns from dataframe
+            df = df.drop(['timestamp_local', 'url', 'opc_rh', 'opc_temp', 'pressure'], axis = 1)
+        else:
+            df[['rh', 'temp']] = df.met.apply(pd.Series)
+            df = df.drop(['geo', 'url', 'met'], axis = 1)
 
         #drop duplicate rows. Timestamps don't properly get recognized as duplicates, so use data_cols.
         df = df.drop_duplicates(subset = self.data_cols, ignore_index=True)
@@ -485,10 +488,10 @@ class ModPMHandler(DataHandler):
         :returns: cleaned pandas dataframe
         """
         client = QuantAQHandler(TOKEN_PATH) #TODO make this not rely on a global variable token_path?
-        df = client.request_data(sensor_id, self.start, self.end, raw=True)
+        df = client.request_data(sensor_id, self.start, self.end, raw=False)
         print(df.dtypes)
         # flatten and clean the dataframe
-        df = self._clean_mod_pm(df, smoothed=smoothed, nested=True)
+        df = self._clean_mod_pm(df, smoothed=smoothed, raw=False)
 
         #add wind direction and speed to df from iem
         df = self._iem(df)
