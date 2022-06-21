@@ -76,7 +76,7 @@ class ReportGenerator:
         import_and_plot_img("wind_polar_plot")
 
         try:
-            os.mkdir('{}/Reports'.format(year_month))
+            os.mkdir('{}/Reports'.format(self.year_month))
         except: # Forgive my crime here, but it just avoids errors if the directory already exists
             pass
         plt.savefig('{1}/Reports/{0}_{1}_{2}.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)

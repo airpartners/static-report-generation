@@ -2,7 +2,7 @@ import quantaq
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 import os
-from iem import fetch_data
+from data_analysis.iem import fetch_data
 import numpy as np
 import pandas as pd
 import pickle

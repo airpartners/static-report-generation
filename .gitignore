@@ -1,4 +1,6 @@
 env
+token.txt
+pull_data.ipynb
 2022-05
 2022-04
 *.DS_Store
