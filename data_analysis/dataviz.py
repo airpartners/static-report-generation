@@ -122,4 +122,4 @@ class OpenAirPlots:
         for p in pollutants:
             # self.grdevices.png(f"{file_prefix}_polar_{p}.png", width=width, height=height)
             # ro.r.polarPlot(r_df, pollutant = p, main = f"{p.upper()} Polar Plot")
-            self.displayOpenairPlot(self.openair.polarPlot, filename=f"{file_prefix}_polar_{p}", width=width, height=height, mydata=r_df, pollutant=p)
+            self.displayOpenairPlot(self.openair.polarPlot, filename=f"{file_prefix}_polar_{p}", width=width, height=height, mydata=r_df, pollutant=p, statistic='nwr')
