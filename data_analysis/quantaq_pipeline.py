@@ -1,3 +1,4 @@
+from sqlite3 import Timestamp
 import quantaq
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -394,17 +395,17 @@ class ModPMHandler(DataHandler):
         :param end: (optional datetime) representing UTC time for end of date range
         """
         super().__init__(
-            data_cols=[
-            "neph_bin0", "neph_bin1", "neph_bin2", "neph_bin3", 
-            "neph_bin4", "neph_bin5", "neph_pm1", "neph_pm10", 
-            "neph_pm25", "opc_bin0", "opc_bin1", "opc_bin10",
-            "opc_bin11", "opc_bin12", "opc_bin13", "opc_bin14",
-            "opc_bin15", "opc_bin16", "opc_bin17", "opc_bin18",
-            "opc_bin19", "opc_bin2", "opc_bin20", "opc_bin21",
-            "opc_bin22", "opc_bin23", "opc_bin3", "opc_bin4",
-            "opc_bin5", "opc_bin6", "opc_bin7","opc_bin8",
-            "opc_bin9", "opc_pm1", "opc_pm10", "opc_pm25"
-            ],  #default columns that we want to clean
+            data_cols=["neph_pm1", "neph_pm10", "neph_pm25", "opc_pm1", "opc_pm10", "opc_pm25"],
+            # "neph_bin0", "neph_bin1", "neph_bin2", "neph_bin3", 
+            # "neph_bin4", "neph_bin5", "neph_pm1", "neph_pm10", 
+            # "neph_pm25", "opc_bin0", "opc_bin1", "opc_bin10",
+            # "opc_bin11", "opc_bin12", "opc_bin13", "opc_bin14",
+            # "opc_bin15", "opc_bin16", "opc_bin17", "opc_bin18",
+            # "opc_bin19", "opc_bin2", "opc_bin20", "opc_bin21",
+            # "opc_bin22", "opc_bin23", "opc_bin3", "opc_bin4",
+            # "opc_bin5", "opc_bin6", "opc_bin7","opc_bin8",
+            # "opc_bin9", "opc_pm1", "opc_pm10", "opc_pm25"
+            # ],  #default columns that we want to clean
             start=start_date,
             end=end_date
         )
@@ -436,8 +437,15 @@ class ModPMHandler(DataHandler):
             #drop columns that contain dictionaries after flattening
             df = df.drop(['neph', 'opc', 'geo', 'met'], axis=1)
 
-        #drop duplicate rows
-        df = df.drop_duplicates(ignore_index=True)
+        # Remove all bin columns from dataframe. 
+        df = df[df.columns.drop(list(df.filter(regex='bin')))]
+
+
+        # Remove other unused columns from dataframe
+        df = df.drop(['timestamp_local', 'url', 'opc_rh', 'opc_temp', 'pressure'], axis = 1)
+
+        #drop duplicate rows. Timestamps don't properly get recognized as duplicates, so use data_cols.
+        df = df.drop_duplicates(subset = self.data_cols, ignore_index=True)
 
         #visual sanity check df columns
         self.check_df(df)
