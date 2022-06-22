@@ -15,7 +15,7 @@ from datetime import datetime
 
 # STATICS (for testing)
 YEAR = 2022
-MONTH = 4
+MONTH = 5
 
 # Import sensor data
 di = DataImporter(year=YEAR, month=MONTH)
