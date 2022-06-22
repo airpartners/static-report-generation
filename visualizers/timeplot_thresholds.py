@@ -10,7 +10,7 @@ class Timeplot(object):
     def detect_inactive_sensor(self, timedelta_to_consider_inactive_in_minutes):
         inactive = [0]
         for i in range(1, len(self.df)):
-            timedelta = (self.df.timestamp_local.iloc[i] - self.df.timestamp_local.iloc[i-1]).total_seconds()/60
+            timedelta = (self.df.timestamp.iloc[i] - self.df.timestamp.iloc[i-1]).total_seconds()/60
             if timedelta >= timedelta_to_consider_inactive_in_minutes:
                 inactive.append(1)
                 inactive[i-1] = 1
@@ -20,7 +20,7 @@ class Timeplot(object):
 
     def thresholds_subplots(self, plot_number, threshold_lower, threshold_upper, fig_axs):
         # time variable
-        ts = self.df.timestamp_local
+        ts = self.df.timestamp
 
         # defining subplot numbers
         if plot_number == 0:

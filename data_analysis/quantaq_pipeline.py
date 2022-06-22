@@ -445,7 +445,7 @@ class ModPMHandler(DataHandler):
             df = df.drop(['timestamp_local', 'url', 'opc_rh', 'opc_temp', 'pressure'], axis = 1)
         else:
             df[['rh', 'temp']] = df.met.apply(pd.Series)
-            df = df.drop(['geo', 'url', 'met'], axis = 1)
+            df = df.drop(['geo', 'url', 'met', 'timestamp_local'], axis = 1)
 
         #drop duplicate rows. Timestamps don't properly get recognized as duplicates, so use data_cols.
         df = df.drop_duplicates(subset = self.data_cols, ignore_index=True)
@@ -489,6 +489,11 @@ class ModPMHandler(DataHandler):
         """
         client = QuantAQHandler(TOKEN_PATH) #TODO make this not rely on a global variable token_path?
         df = client.request_data(sensor_id, self.start, self.end, raw=False)
+        
+        # check for empty dataframe
+        if df.empty:
+            return df
+
         print(df.dtypes)
         # flatten and clean the dataframe
         df = self._clean_mod_pm(df, smoothed=smoothed, raw=False)

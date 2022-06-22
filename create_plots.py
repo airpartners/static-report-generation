@@ -15,7 +15,7 @@ from data_analysis.dataviz import OpenAirPlots
 
 def calendar_plot(data_PM, month, year):
     # Reformat data so only data from that month is plotted
-    data_PM = data_PM.set_index('timestamp_local').resample('1D').mean()
+    data_PM = data_PM.set_index('timestamp').resample('1D').mean()
     data_PM = data_PM[data_PM['month'] == month]
     
     # Create calendar plot
@@ -31,7 +31,7 @@ def timeplot_threshold(data_PM):
 
 
 def time_of_day_plot(dataPM):
-    dataPM_10min = dataPM.set_index('timestamp_local').resample('10T').mean()
+    dataPM_10min = dataPM.set_index('timestamp').resample('10T').mean()
     dataPM_10min['hour_minute'] = dataPM_10min.index.strftime('%H:%M')
     dataPM_10min = dataPM_10min.groupby('hour_minute').mean()
 
@@ -47,7 +47,7 @@ def time_of_day_plot(dataPM):
 
 
 def daily_average_plot(dataPM):
-    dataPM_day = dataPM.set_index('timestamp_local').resample('1D').mean()
+    dataPM_day = dataPM.set_index('timestamp').resample('1D').mean()
     plt.style.use('ggplot')
 
     _,axes=plt.subplots(1,1,figsize=(8,5))
@@ -99,7 +99,7 @@ def _replace_with_iem(df, iem_df, is_tz_aware=True):
         df = df.assign(wind_speed=iem_df['sped'] * (1609/3600))  #converting to m/s, 1609 meters per mile, 3600 seconds per hr
         return df
 
-def wind_polar_plot(data_PM, month, iem_df):
+def wind_polar_plot(data_PM, month):
     # Get data only from specified month
     data_PM = data_PM[data_PM['month'] == month]
 
@@ -108,7 +108,7 @@ def wind_polar_plot(data_PM, month, iem_df):
     
     #df = df.rename(columns={"timestamp_local": "date", "wind_speed": "ws", "wind_dir": "wd"})
     #df.wd = df.wd.replace(0.0, 360.0)
-    df = data_PM[['timestamp_local', 'wind_speed', 'wind_dir', 'pm25']]
+    df = data_PM[['timestamp', 'wind_speed', 'wind_dir', 'pm25']]
     
     # Remove any points where wind data was unavailable. 
     df = df[df.wind_speed != 0]
