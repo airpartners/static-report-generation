@@ -63,3 +63,6 @@ target/
 
 # Jupyter notebook
 .ipynb_checkpoints/
+
+# qaq cleaned plots
+qaq_cleaned_data/*
