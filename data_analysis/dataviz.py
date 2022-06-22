@@ -129,4 +129,4 @@ class OpenAirPlots:
                                     mydata=r_df, 
                                     pollutant=p, 
                                     statistic='nwr',
-                                    cols="Spectral_r")
+                                    cols="jet")
