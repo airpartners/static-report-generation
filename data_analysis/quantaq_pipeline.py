@@ -1,3 +1,5 @@
+from sqlite3 import Timestamp
+from matplotlib.pyplot import axis
 import quantaq
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -394,23 +396,23 @@ class ModPMHandler(DataHandler):
         :param end: (optional datetime) representing UTC time for end of date range
         """
         super().__init__(
-            data_cols=[
-            "neph_bin0", "neph_bin1", "neph_bin2", "neph_bin3", 
-            "neph_bin4", "neph_bin5", "neph_pm1", "neph_pm10", 
-            "neph_pm25", "opc_bin0", "opc_bin1", "opc_bin10",
-            "opc_bin11", "opc_bin12", "opc_bin13", "opc_bin14",
-            "opc_bin15", "opc_bin16", "opc_bin17", "opc_bin18",
-            "opc_bin19", "opc_bin2", "opc_bin20", "opc_bin21",
-            "opc_bin22", "opc_bin23", "opc_bin3", "opc_bin4",
-            "opc_bin5", "opc_bin6", "opc_bin7","opc_bin8",
-            "opc_bin9", "opc_pm1", "opc_pm10", "opc_pm25"
-            ],  #default columns that we want to clean
+            data_cols=["pm1", "pm10", "pm25"],
+            # "neph_bin0", "neph_bin1", "neph_bin2", "neph_bin3", 
+            # "neph_bin4", "neph_bin5", "neph_pm1", "neph_pm10", 
+            # "neph_pm25", "opc_bin0", "opc_bin1", "opc_bin10",
+            # "opc_bin11", "opc_bin12", "opc_bin13", "opc_bin14",
+            # "opc_bin15", "opc_bin16", "opc_bin17", "opc_bin18",
+            # "opc_bin19", "opc_bin2", "opc_bin20", "opc_bin21",
+            # "opc_bin22", "opc_bin23", "opc_bin3", "opc_bin4",
+            # "opc_bin5", "opc_bin6", "opc_bin7","opc_bin8",
+            # "opc_bin9", "opc_pm1", "opc_pm10", "opc_pm25"
+            # ],  #default columns that we want to clean
             start=start_date,
             end=end_date
         )
 
 
-    def _clean_mod_pm(self, df, smoothed=True, nested=False):
+    def _clean_mod_pm(self, df, smoothed=True, raw=False):
         """
         Flatten dataframe received from the MOD-PM sensors. This method is a helper function for data fetched via
         REST API. only data from the API have nested columns, the CSV's do not.
@@ -423,7 +425,7 @@ class ModPMHandler(DataHandler):
         #replace timestamp info
         df = self.convert_timestamps(df)
 
-        if nested:
+        if raw:
             #create column names based on all keys within the dictionary
             neph_cols = [f"neph_{k}" for k in df['neph'][0].keys()]
             opc_cols = [f"opc_{k}" for k in df['opc'][0].keys()]
@@ -436,8 +438,17 @@ class ModPMHandler(DataHandler):
             #drop columns that contain dictionaries after flattening
             df = df.drop(['neph', 'opc', 'geo', 'met'], axis=1)
 
-        #drop duplicate rows
-        df = df.drop_duplicates(ignore_index=True)
+            # Remove all bin columns from dataframe. 
+            df = df[df.columns.drop(list(df.filter(regex='bin')))]
+
+            # Remove other unused columns from dataframe
+            df = df.drop(['timestamp_local', 'url', 'opc_rh', 'opc_temp', 'pressure'], axis = 1)
+        else:
+            df[['rh', 'temp']] = df.met.apply(pd.Series)
+            df = df.drop(['geo', 'url', 'met'], axis = 1)
+
+        #drop duplicate rows. Timestamps don't properly get recognized as duplicates, so use data_cols.
+        df = df.drop_duplicates(subset = self.data_cols, ignore_index=True)
 
         #visual sanity check df columns
         self.check_df(df)
@@ -477,10 +488,10 @@ class ModPMHandler(DataHandler):
         :returns: cleaned pandas dataframe
         """
         client = QuantAQHandler(TOKEN_PATH) #TODO make this not rely on a global variable token_path?
-        df = client.request_data(sensor_id, self.start, self.end, raw=True)
+        df = client.request_data(sensor_id, self.start, self.end, raw=False)
         print(df.dtypes)
         # flatten and clean the dataframe
-        df = self._clean_mod_pm(df, smoothed=smoothed, nested=True)
+        df = self._clean_mod_pm(df, smoothed=smoothed, raw=False)
 
         #add wind direction and speed to df from iem
         df = self._iem(df)

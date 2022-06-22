@@ -6,6 +6,7 @@ Functions to collect figures into a static report PDF
 """
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+from pathlib import Path
 import img2pdf
 import os
 
@@ -131,11 +132,16 @@ class ReportGenerator:
             fontsize=6, y=0.1
         )
 
+<<<<<<< HEAD
         # Save newly created reports to Reports directory
         try:
             os.mkdir('{}/Reports'.format(self.year_month))
         except: # Forgive my crime here, but it just avoids errors if the directory already exists
             pass
+=======
+        folders = f'{self.year_month}/Reports'
+        Path(folders).mkdir(parents=True, exist_ok=True)
+>>>>>>> b7d2cf3aa06401e6db38e48aee9678f45f3299c0
         plt.savefig('{1}/Reports/{0}_{1}_{2}.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)
 
     def _create_report_pdf(self):
@@ -152,11 +158,16 @@ class ReportGenerator:
             ImgFile.close()
             PdfFile.close()
 
+<<<<<<< HEAD
         # Create and save newly created PDF reports to Reports directory
         try:
             os.mkdir('{}/Reports/PDFs'.format(self.year_month))
         except: # Forgive my crime here, but it just avoids errors if the directory already exists
             pass
+=======
+        folders = f'{self.year_month}/Reports/PDFs'
+        Path(folders).mkdir(parents=True, exist_ok=True)
+>>>>>>> b7d2cf3aa06401e6db38e48aee9678f45f3299c0
         image_to_pdf('{1}/Reports/{0}_{1}_{2}.jpeg'.format(self.sn,self.year_month,str('Report')),
                     '{1}/Reports/PDFs/{0}_{1}_{2}.pdf'.format(self.sn,self.year_month,str('Report')))
 
