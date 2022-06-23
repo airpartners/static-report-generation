@@ -48,8 +48,12 @@ class DataImporter(object):
             print("Data pulled from Pickle file")
         # Otherwise download it from API
         except:
-            # Pull dataframe from API, will return the dataframe and will also pickle the results for you to open and use later
-            df = mod_handler.from_api(sensor_sn)
+            # try:
+            #     # Pull dataframe from API, will return the dataframe and will also pickle the results for you to open and use later
+            #     df = mod_handler.from_api(sensor_sn)
+            # except:
+            #     # If there is a request protocol error, create an empty dataframe (temp solution)
+                df = pd.DataFrame()
         return df
 
     def _get_start_end_dates(self, year_int_YYYY, month_int):
@@ -74,9 +78,7 @@ class DataImporter(object):
             print('\rSensor Progress: {0} / {1}\n'.format(sensor_count, sn_count), end='', flush=True)
             # If sensor data already exists in pickle file, use that
             
-            df = self._data_month(sn) 
-            # Add month column in df so extraneous days can be filtered out later
-            df['month'] = [df.iloc[row]['timestamp'].month for row in range(df.shape[0])]
+            df = self._data_month(sn)
             sn_dict[sn] = df
             sensor_count+=1
         print('\nDone!')

@@ -494,7 +494,8 @@ class ModPMHandler(DataHandler):
         if df.empty:
             return df
 
-        print(df.dtypes)
+        print('Downloaded from API')
+        #print(df.dtypes)
         # flatten and clean the dataframe
         df = self._clean_mod_pm(df, smoothed=smoothed, raw=False)
 

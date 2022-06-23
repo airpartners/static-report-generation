@@ -15,7 +15,7 @@ from datetime import datetime
 
 # STATICS (for testing)
 YEAR = 2022
-MONTH = 5
+MONTH = 6
 
 # Import sensor data
 di = DataImporter(year=YEAR, month=MONTH)
@@ -29,24 +29,26 @@ date_str = str(YEAR) + '-0' + str(MONTH) if MONTH<=9 else str(YEAR) + '-' + str(
 pl = Plotter(date_str, sn_list, sn_dict)
 
 # calendar plots
-pl.plot_and_export(calendar_plot, month=MONTH, year=YEAR)
+pl.plot_and_export(calendar_plot, pm='pm1', month=MONTH, year=YEAR)
+pl.plot_and_export(calendar_plot, pm='pm25',month=MONTH, year=YEAR)
+pl.plot_and_export(calendar_plot, pm='pm10',month=MONTH, year=YEAR)
 print('Calendars plotted')
 
+# wind polar plots
+pl.plot_and_export(wind_polar_plot, pm='pm1')
+pl.plot_and_export(wind_polar_plot, pm='pm25')
+pl.plot_and_export(wind_polar_plot, pm='pm10')
+print('Wind polar plots plotted')
+
 # timeplots with thresholds
-pl.plot_and_export(timeplot_threshold)
+pl.plot_and_export(timeplot_threshold, pm=None)
 print('Timelines plotted')
 
-# time of day plots
-pl.plot_and_export(time_of_day_plot)
-print('Time of day plotted')
-
-# daily average plots
-pl.plot_and_export(daily_average_plot)
-print('Daily averages plotted')
-
-# wind polar plots
-pl.plot_and_export(wind_polar_plot, month=MONTH)
-print('Wind polar plots plotted')
+# diurnal plots
+pl.plot_and_export(diurnal_plot, pm='pm1')
+pl.plot_and_export(diurnal_plot, pm='pm25')
+pl.plot_and_export(diurnal_plot, pm='pm10')
+print('Diurnals plotted')
 
 # generate reports for each sensor
 for sn in sn_list:
