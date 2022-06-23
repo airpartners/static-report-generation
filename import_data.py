@@ -48,11 +48,11 @@ class DataImporter(object):
             print("Data pulled from Pickle file")
         # Otherwise download it from API
         except:
-            # try:
-            #     # Pull dataframe from API, will return the dataframe and will also pickle the results for you to open and use later
-            #     df = mod_handler.from_api(sensor_sn)
-            # except:
-            #     # If there is a request protocol error, create an empty dataframe (temp solution)
+            try:
+                # Pull dataframe from API, will return the dataframe and will also pickle the results for you to open and use later
+                df = mod_handler.from_api(sensor_sn)
+            except:
+                # If there is a request protocol error, create an empty dataframe (temp solution)
                 df = pd.DataFrame()
         return df
 

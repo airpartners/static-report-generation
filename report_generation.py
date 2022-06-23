@@ -7,7 +7,7 @@ Functions to collect figures into a static report PDF
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 from pathlib import Path
-import img2pdf
+from fpdf import FPDF
 import os
 
 
@@ -82,7 +82,7 @@ class ReportGenerator:
         ## Timeplots with Thresholds
         fig.add_subplot(grid[4:10,:], frameon=False)
         plt.title('PM Over Time', y=graph_title_position,fontsize=graph_title_size)
-        import_and_plot_img("timeplot_threshold")
+        import_and_plot_img("timeplot_threshold", pm=None)
         # Caption
         fig.add_subplot(grid[10:12,:], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
@@ -117,10 +117,10 @@ class ReportGenerator:
         )
 
         # Create Pictures directory in Reports directory (if exists, does nothing)
-        folders = f'{self.year_month}/Reports/Pictures'
+        folders = f'{self.year_month}/Reports/Pictures/{self.sn}'
         Path(folders).mkdir(parents=True, exist_ok=True)
         # Save first page
-        plt.savefig('{1}/Reports/Pictures/{0}_{1}_{2}_pg_1.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)
+        plt.savefig('{1}/Reports/Pictures/{0}/{1}_{2}_pg_1.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)
 
         ############### SECOND PAGE ####################
         fig2 = plt.figure(figsize=(8.3,11.7))
@@ -195,7 +195,7 @@ class ReportGenerator:
         )
 
         # Save second page
-        plt.savefig('{1}/Reports/Pictures/{0}_{1}_{2}_pg_2.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)
+        plt.savefig('{1}/Reports/Pictures/{0}/{1}_{2}_pg_2.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)
 
 
     def _create_report_pdf(self):
@@ -203,20 +203,26 @@ class ReportGenerator:
         Makes a PDF copy of the jpeg version of the report.
         _create_report_image MUST be run first.
         """
-
-        # Function to convert image into PDF
-        def image_to_pdf(img_path, pdf_path):
-            ImgFile = open(img_path,"rb")
-            PdfFile = open(pdf_path,"wb")
-            PdfFile.write(img2pdf.convert(ImgFile))
-            ImgFile.close()
-            PdfFile.close()
+        
+        def images_to_pdf(imgs_path, pdf_path):
+            # initialize PDF
+            pdf = FPDF()
+            pdf.set_auto_page_break(0)
+            
+            img_list = [f'{imgs_path}/{img}' for img in os.listdir(imgs_path)]
+            # add pages for each image and place image on page
+            for img in img_list:
+                pdf.add_page()
+                pdf.image(img)
+            # save output into assigned PDF path
+            pdf.output(pdf_path)
+            pdf.close()
 
         # Create PDFs directory in Reports directory (if exists, does nothing)
         folders = f'{self.year_month}/Reports/PDFs'
         Path(folders).mkdir(parents=True, exist_ok=True)
         # Convert images to PDFs
-        image_to_pdf('{1}/Reports/Pictures/{0}_{1}_{2}.jpeg'.format(self.sn,self.year_month,str('Report')),
+        images_to_pdf('{1}/Reports/Pictures/{0}'.format(self.sn,self.year_month),
                     '{1}/Reports/PDFs/{0}_{1}_{2}.pdf'.format(self.sn,self.year_month,str('Report')))
 
     
