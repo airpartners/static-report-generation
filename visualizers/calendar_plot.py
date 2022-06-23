@@ -6,6 +6,7 @@ Class for creating calendar plots reporting air quality on monthly basis.
 """
 
 import calendar
+import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -21,9 +22,18 @@ class CalendarPlot(object):
     """
     Class including functions needed for creating calendar plots.
     """
-    def __init__(self, year, month):
+    def __init__(self, pm, year, month):
         self.year = year
         self.month = month
+        self.pm = pm
+        # Dictionary for labeling calendar axis
+        label_dict = {'pm1': ('PM1', 10, 5, 2), 'pm25': ('PM2.5', 20, 12, 5), 'pm10': ('PM10', 40, 25, 12)}
+        self.label = label_dict[pm][0]
+        # Color scale maximum for different PMs
+        self.scale = label_dict[pm][1]
+        # Threshold values
+        self.high_thresh = label_dict[pm][2]
+        self.low_thresh = label_dict[pm][3]
         # Create a list of lists for each week
         self.cal = calendar.monthcalendar(year, month)
         # Save the PM data in the same format
@@ -36,7 +46,7 @@ class CalendarPlot(object):
         Returns:
             A color palette object
         """
-        smap = sns.color_palette('Spectral_r', 20)
+        smap = sns.color_palette('Spectral_r', self.scale)
         return smap
 
     def _monthday_to_index(self, day):
@@ -68,14 +78,17 @@ class CalendarPlot(object):
         # installed in middle of month
         for day in reversed(range(start_date, end_date)):
             week, w_day = self._monthday_to_index(day+1)
-            self.pm_vals[week][w_day] = df.iloc[day - (start_date)]['pm25']
+            pm_val = df.iloc[day - (start_date)][self.pm]
+            if np.isnan(pm_val):
+                self.pm_vals[week][w_day] = 0
+            else:
+                self.pm_vals[week][w_day] = df.iloc[day - (start_date)][self.pm]
 
     def show(self):
         """
         Create the calendar to be displayed
         """
         color_list = self._get_colors()
-        color_len = len(color_list)
 
         # Create grid of subplots, where each subplot is a day in the calendar
         f, axs = plt.subplots(len(self.cal), 7, sharex=True, sharey=True)
@@ -93,7 +106,7 @@ class CalendarPlot(object):
                     # TODO: change this scale to make sense with PM 2.5 values
                     pm_val = self.pm_vals[week][week_day]
                     # if PM value is very high, color of day is last color on palette
-                    if pm_val >= 20:
+                    if pm_val >= self.scale:
                         ax.set_facecolor(color_list[-1])
                     # if PM value is zero, no PM data from that day, leave white
                     elif pm_val == 0:
@@ -115,8 +128,11 @@ class CalendarPlot(object):
         
         # Add colorbar
         cbar_ax = f.add_axes([0.85, 0.15, 0.05, 0.7])
-        norm = matplotlib.colors.Normalize(vmin=0, vmax=20)
-        f.colorbar(matplotlib.cm.ScalarMappable(norm=norm, 
+        norm = matplotlib.colors.Normalize(vmin=0, vmax=self.scale)
+        cbar = f.colorbar(matplotlib.cm.ScalarMappable(norm=norm, 
                                                 cmap='Spectral_r'), 
                                                 cax=cbar_ax, 
-                                                label='Concentrations of PM2.5 [μg/m³]')
+                                                label=f'Concentrations of {self.label} [μg/m³]')
+        # Add dashed lines on colorbar representing key thresholds
+        cbar.ax.hlines(self.high_thresh, 0, 2.5, colors='black', linestyles='dotted', linewidth=2)
+        cbar.ax.hlines(self.low_thresh, 0, 2.5, colors='black', linestyles='dotted', linewidth=2)
