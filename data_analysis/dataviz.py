@@ -127,6 +127,7 @@ class OpenAirPlots:
                                     width=width, 
                                     height=height, 
                                     mydata=r_df, 
-                                    pollutant=p, 
+                                    pollutant=p,
+                                    main=f'{p} Concentrations (ug/m3)', 
                                     statistic='nwr',
-                                    cols="jet")
+                                    col="jet")

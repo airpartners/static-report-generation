@@ -9,6 +9,7 @@ import calendar
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+from datetime import date
 import seaborn as sns
 
 calendar.setfirstweekday(6) # Sunday is 1st day in US
@@ -72,7 +73,13 @@ class CalendarPlot(object):
         """
         Assign PM value for each day in the month based on air quality DataFrame
         """
-        end_date = calendar.monthrange(self.year, self.month)[1]
+        # Check if the date at which data is generated is happening within designated month
+        # and year; if it is, set end_date to today; otherwise, set it to last day of month
+        today = date.today()
+        if self.month==today.month and self.year==today.year:
+            end_date = today.day
+        else:
+            end_date = calendar.monthrange(self.year, self.month)[1]
         start_date = end_date - df.shape[0]
         # Doing days in reversed order, for the case that a sensor was 
         # installed in middle of month

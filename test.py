@@ -15,7 +15,7 @@ from datetime import datetime
 
 # STATICS (for testing)
 YEAR = 2022
-MONTH = 5
+MONTH = 6
 
 # Import sensor data
 di = DataImporter(year=YEAR, month=MONTH)
@@ -33,22 +33,26 @@ pl.plot_and_export(calendar_plot, pm='pm1', month=MONTH, year=YEAR)
 pl.plot_and_export(calendar_plot, pm='pm25',month=MONTH, year=YEAR)
 pl.plot_and_export(calendar_plot, pm='pm10',month=MONTH, year=YEAR)
 print('Calendars plotted')
+plt.close()
 
 # wind polar plots
 pl.plot_and_export(wind_polar_plot, pm='pm1')
 pl.plot_and_export(wind_polar_plot, pm='pm25')
 pl.plot_and_export(wind_polar_plot, pm='pm10')
 print('Wind polar plots plotted')
+plt.close()
 
 # timeplots with thresholds
 pl.plot_and_export(timeplot_threshold, pm=None)
 print('Timelines plotted')
+plt.close()
 
 # diurnal plots
 pl.plot_and_export(diurnal_plot, pm='pm1')
 pl.plot_and_export(diurnal_plot, pm='pm25')
 pl.plot_and_export(diurnal_plot, pm='pm10')
 print('Diurnals plotted')
+plt.close()
 
 # generate reports for each sensor
 for sn in sn_list:
