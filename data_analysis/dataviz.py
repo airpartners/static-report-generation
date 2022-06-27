@@ -12,8 +12,7 @@ if not os.environ.get("R_HOME"):
 from rpy2.robjects.packages import importr
 from rpy2.robjects import pandas2ri
 import rpy2.robjects as ro
-from rpy2.robjects.lib import grdevices    
-import IPython
+from rpy2.robjects.lib import grdevices
 from PIL import Image
 
 def plot(df, handler, sensor_id, save_prefix=None, smoothed=True, cols=None):
@@ -94,14 +93,17 @@ class OpenAirPlots:
 
     def displayOpenairPlot(self, func, filename, width, height, res=150, *args, **kwargs):
         with grdevices.render_to_bytesio(grdevices.png, width=width, height=height, res=res) as img:
-            plot = func(*args, **kwargs)
+            _ = func(*args, **kwargs)
         # Display image
         # image = IPython.display.Image(data=img.getvalue(), format='png', embed=True)
         # IPython.display.display(image)
-
+        ro.r('gc()')
+        
         # save the image as PNG
         img2 = Image.open(img)
         img2.save(f"{filename}.png")
+        img.close()
+        img2.close()
     
     def polar_plot(self, df, file_prefix, pollutants, width=700, height=700):
         """
@@ -131,3 +133,4 @@ class OpenAirPlots:
                                     main=f'{p} Concentrations (ug/m3)', 
                                     statistic='nwr',
                                     col="jet")
+            ro.r('rm(list = ls())')

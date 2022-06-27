@@ -4,12 +4,13 @@ Project: Air Partners
 
 Functions to collect figures into a static report PDF
 """
+import os, sys
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 from pathlib import Path
 from fpdf import FPDF
 from PIL import Image
-import os
+from import_data import DataImporter
 
 
 def generate_report(month, year, sn):
@@ -245,4 +246,14 @@ class ReportGenerator:
 
 
 if __name__=='__main__':
-    generate_report(5, 2022, 'MOD-PM-00212')
+    # get year and month from sys args
+    year, month = int(sys.argv[1]), int(sys.argv[2])
+    # Import sensor data from pickles
+    di = DataImporter(year=year, month=month)
+    sn_list, sn_dict = di.get_PM_data()
+
+    # generate reports for each sensor
+    for sn in sn_list:
+        if not sn_dict[sn].empty:
+            generate_report(month, year, sn)
+            print(f"Finished report {sn}.")
