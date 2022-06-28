@@ -85,7 +85,7 @@ def wind_polar_plot(data_PM, pm):
     
     # Take current image, save image again using matplotlib
     img = plt.imread(fname=f'2022-04/Graphs/wind_polar_plot/_polar_{pm}.png')
-    plt.figure()
+    plt.figure(frameon=False)
     plt.imshow(img)
     plt.grid(None)
     plt.xticks([])

@@ -5,7 +5,7 @@ Project: Air Partners
 Script for importing necessary data for air quality analysis for static reporting.
 """
 
-
+import sys
 import pandas as pd
 from calendar import monthrange
 import quantaq
@@ -45,14 +45,14 @@ class DataImporter(object):
         try:
             start_date, end_date = self._get_start_end_dates(self.year, self.month)
             df = mod_handler.load_df(sensor_sn, start_date, end_date)
-            print("Data pulled from Pickle file")
+            print("\r Data pulled from Pickle file", flush=True)
         # Otherwise download it from API
         except:
-            # try:
-            #     # Pull dataframe from API, will return the dataframe and will also pickle the results for you to open and use later
-            #     df = mod_handler.from_api(sensor_sn)
-            # except:
-            #     # If there is a request protocol error, create an empty dataframe (temp solution)
+            try:
+                # Pull dataframe from API, will return the dataframe and will also pickle the results for you to open and use later
+                df = mod_handler.from_api(sensor_sn)
+            except:
+                # If there is a request protocol error, create an empty dataframe (temp solution)
                 df = pd.DataFrame()
         return df
 
@@ -86,5 +86,6 @@ class DataImporter(object):
 
 
 if __name__ == '__main__':
-    di = DataImporter(year=YEAR, month=MONTH)
+    (year, month) = (sys.argv[1], sys.argv[2]) if len(sys.argv)==2 else (YEAR, MONTH)
+    di = DataImporter(year=year, month=month)
     sn_list, sn_dict = di.get_PM_data()
