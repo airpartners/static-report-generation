@@ -127,3 +127,4 @@ class Plotter(object):
                 else:
                     plot_function(self.sn_dict[sn], pm, **kwargs)
                     plt.savefig('{1}/Graphs/{2}/{3}/{0}_{1}_{2}.jpeg'.format(sn, self.year_month, str(plot_function.__name__), pm), bbox_inches='tight',dpi = 300)
+                plt.close()
