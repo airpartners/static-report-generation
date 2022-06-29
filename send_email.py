@@ -10,19 +10,20 @@ from email import encoders
 def send_mail(send_from, send_to, subject, message, files=[],
               server="localhost", port=587, username='', password='',
               use_tls=True):
-    """Compose and send email with provided info and attachments.
+    """
+    Compose and send email with provided info and attachments.
 
-    Args:
-        send_from (str): from name
-        send_to (list[str]): to name(s)
-        subject (str): message title
-        message (str): message body
-        files (list[str]): list of file paths to be attached to email
-        server (str): mail server host name
-        port (int): port number
-        username (str): server auth username
-        password (str): server auth password
-        use_tls (bool): use TLS mode
+    :param send_from: (str) from name
+    :param send_to: (list[str]) to name(s)
+    :param subject (str): message title
+    :param message (str): message body
+    :param files (list[str]): list of file paths to be attached to email
+    :param server (str): mail server host name
+    :param port (int): port number
+    :param username (str): server auth username
+    :param password (str): server auth password
+    :param use_tls (bool): use TLS mode
+    :returns: none, sends an email
     """
     msg = MIMEMultipart()
     msg['From'] = send_from

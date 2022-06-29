@@ -30,13 +30,25 @@ class DataImporter(object):
         self.month = month
 
     def get_sensor_list(self):
+        """
+        Retrieves a list of sensor names from QuantAQ API.
+
+        :returns: A filtered list of sensor information
+        :returns: A list of all sensor information
+        """
         devices_raw = to_dataframe(client.devices.list(filter="city,like,%_oxbury%"))
         devices_simplified = devices_raw.iloc[:,[4,3,11,15,16,5,7,8,10,12]]
         return devices_simplified, devices_raw
 
 
-    def _data_month(self, sensor_sn):        
+    def _data_month(self, sensor_sn):
+        """
+        Gets data for a specific sensor.
+        If data doesn't already exist in a pickle file, data is pulled from QuantAQ API.
 
+        :param sensor_sn: (str) The serial number of the sensor to pull data for
+        :returns: A pandas dataframe containing all of the sensor data for the month
+        """
         start_date, end_date = self._get_start_end_dates(self.year, self.month)
 
         mod_handler = qp.ModPMHandler(start_date=start_date, end_date=end_date)
@@ -57,6 +69,15 @@ class DataImporter(object):
         return df
 
     def _get_start_end_dates(self, year_int_YYYY, month_int):
+        """
+        Creates datetime objects for the start and end of the specified month.
+
+        :param year_int_YYYY: (int) The year
+        :param month_int: (int) The month
+        
+        :returns: DateTime object for the first day of the month
+        :returns: DateTime object for the last day of the month
+        """
         # get number of days in month_int of that year
         no_of_days = monthrange(year_int_YYYY, month_int)[1]
         # get start and end dates in type datetime
@@ -66,6 +87,10 @@ class DataImporter(object):
 
     def get_PM_data(self):
         """
+        Collects data from all sensors for the month.
+
+        :returns: A list of all sensors available from QuantAQ API
+        :returns: A dictionary with sensor serial numbers as keys and pandas dataframes containing sensor data as values
         """
         df_sensor_list, _ = self.get_sensor_list()
 

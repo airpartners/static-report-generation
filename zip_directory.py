@@ -5,8 +5,8 @@ def zip_directory(dirName):
     """
     Creates a compressed copy of the given directory.
 
-    Args:
-        dirName: (str) the name of the directory to zip. 
+    :param dirName: (str) the name of the directory to zip
+    :returns: none, makes a zipped directory file
     """
     shutil.make_archive(dirName, 'zip', dirName)
 
