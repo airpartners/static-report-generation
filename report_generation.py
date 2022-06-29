@@ -29,8 +29,8 @@ class ReportGenerator:
         """
         Create JPEG file of static report with compiled visualizations and captions.
         """
-
-        def import_and_plot_img(plot_function, pm):
+        
+        def import_and_plot_img(img_path):
             """
             Get PNG files of graphs created for report.
 
@@ -42,10 +42,7 @@ class ReportGenerator:
             """
 
             plt.grid(0);plt.yticks([]);plt.xticks([])
-            if pm==None:
-                img = mpimg.imread('{1}/Graphs/{2}/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, plot_function))
-            else:
-                img = mpimg.imread('{1}/Graphs/{2}/{3}/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, plot_function, pm))
+            img = mpimg.imread(img_path)
             plt.imshow(img)
         
         ################# FIRST PAGE ############################
@@ -55,70 +52,113 @@ class ReportGenerator:
         graph_title_position = 0.98
         graph_title_size = 15
 
+        # Subscripts (helpful for captions)
+        SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+        
+        ## Logos
+        fig.add_subplot(grid[:2,:1], frameon=False)
+        plt.grid(0);plt.yticks([]);plt.xticks([])
+        air_img = plt.imread('_images/airpartners_logo.png', )
+        plt.imshow(air_img)
+
+        fig.add_subplot(grid[:2,8:], frameon=False)
+        plt.grid(0);plt.yticks([]);plt.xticks([])
+        ace_img = plt.imread('_images/ace_logo.png')
+        plt.imshow(ace_img)
+        
         ## Title
-        fig.add_subplot(grid[:2,:], frameon=False)
+        fig.add_subplot(grid[:2,2:7], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
         dic_month = {1:"January",2:"February",3:"March",4:"April",5:"May",6:"June",
                     7:"July",8:"August",9:"September",10:"October",11:"November",12:"December"}
-        plt.title('  {0} {1}: {2}'.format(dic_month[self.month], self.year, self.sn), fontsize=21, y=0.86)
+        plt.title('Particulate Matter Monthly Summary', fontsize=18, weight='bold', y=0.86)
+        plt.suptitle('  {0} {1}: {2}'.format(dic_month[self.month], self.year, self.sn), fontsize=12, y=0.866)
         
         ## Header
         fig.add_subplot(grid[2:6,:], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
         plt.text(
-            x=0, y=0, 
+            x=0, y=0.7, 
             s ='\n\
-            This report has data collected from the community owned air sensor network in\n\
-            Roxbury in collaboration with ACE. The sensors are QuantAQ ModulairTM PM and\n\
-            measure Particulate Matter (PM) from burning fossil fuels that is harmful to\n\
-            human health. If you have any questions or concerns, please contact\n\
-            <INSERT CONTACT INFO>.\n\n\
-            Glossary: \n\
-            Term 1: definition\n\
-            Term 2: definition\n\
-            Term 3: definition\n\
-            \tSubpoint\n\
-            \tSubpoint'
+            This report is a monthly summary of Particulate Matter (PM) data collected as part of the\n\
+            community-owned air quality monitoring network jointly managed by Alternatives for Community\n\
+            and Environment (ACE) in Roxbury, MA and the Air Partners Group at Olin College of Engineering.\n\
+            Data were collected by a QuantAQ Modulair-PM instrument. To\n\
+            learn more, please contact Air Partners Research Program\n\
+            Manager Francesca Majluf at fmajluf@olin.edu.\n',
+            fontsize=8
         )
+        
+        fig.add_subplot(grid[4:7,:], frameon=False)
+        plt.grid(0);plt.yticks([]);plt.xticks([])
+        box_style = dict(boxstyle='round', facecolor='skyblue', alpha=0.5)
+        plt.text(
+            x=0.07,y=0.5,
+            s='\n\
+            Glossary:\n\
+            PM: Particulate matter (small particles or droplets suspended in the air).                   \n\
+            {0}: Mass concentration (μg/m3) of particles smaller than 1 μm in diameter.\n\
+            Sources include fossil fuel combustion.\n\
+            {1}: Mass concentration (μg/m3) of particles smaller than 2.5 μm in diameter.\n\
+            Sources include a mixture of fossil fuel combustion and dust sources.\n\
+            {2}: Mass concentration (μg/m3) of particles smaller than 10 μm in diameter.\n\
+            Sources include construction, road dust and windblown dust.\n'
+                .format('PM1'.translate(SUB), 'PM25'.translate(SUB), 'PM10'.translate(SUB)),
+            fontsize=5, bbox=box_style
+        )
+
+        ## Map
+        fig.add_subplot(grid[2:6,5:9], frameon=False)
+        plt.grid(0);plt.yticks([]);plt.xticks([])
+        import_and_plot_img('_images/locs/{0}.png'.format(self.sn))
+        # Add circle for radius of effect
+        plt.Circle((350,250), radius=50, color="blue")
+        
 
         ## Timeplots with Thresholds
         fig.add_subplot(grid[6:12,:], frameon=False)
-        plt.title('PM Over Time', y=graph_title_position,fontsize=graph_title_size)
-        import_and_plot_img("timeplot_threshold", pm=None)
+        plt.title('Particulate Matter Time Series', y=graph_title_position,fontsize=graph_title_size)
+        import_and_plot_img('{1}/Graphs/{2}/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'timeplot_threshold'))
         # Caption
         fig.add_subplot(grid[12:13,:], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
         plt.text(
-            x=0, y=-5, 
+            x=0, y=-2, 
             s='\n\
-            This timeplot shows the levels of PM of different diameters (<10μm, <2.5μm, and <1μm, respectively)\n\
-            over the course of the month. The different colors represent different thresholds based on national\n\
-            standards of air quality and WHO (World Health Organization) air quality guidelines. The thresholds\n\
-            defined for PM2.5 are used for the other color scales on the calendar plot and the wind polar plot.\n\
-            (See next page.)',
-            fontsize=8
+            Time series for PM1, PM2.5, and PM10 for the entire month. '.translate(SUB)+
+            'Upper thresholds represent National Ambient Air Quality (NAAQS) 24 h standards,\n\
+            and lower limits represent World Health Organization (WHO) 24 h standards. No official standards exist for PM1, so they are arbitrarily set\n\
+            here at 5 μg/m3 (upper limit) and 2 μg/m3 (lower limit).',
+            fontsize=6
         )
 
         ## Calendar plots
         fig.add_subplot(grid[13:19,:3], frameon=False)
-        import_and_plot_img("calendar_plot", "pm1")
+        import_and_plot_img('{1}/Graphs/{2}/pm1/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'calendar_plot'))
 
         fig.add_subplot(grid[13:19,3:6], frameon=False)
-        plt.title('PM Concentration Calendars', y=graph_title_position,fontsize=graph_title_size)
-        import_and_plot_img("calendar_plot", "pm25")
+        plt.title('Average (MEAN) Daily PM Concentration', y=graph_title_position,fontsize=graph_title_size)
+        import_and_plot_img('{1}/Graphs/{2}/pm25/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'calendar_plot'))
 
         fig.add_subplot(grid[13:19,6:9], frameon=False)
-        import_and_plot_img("calendar_plot", "pm10")
+        import_and_plot_img('{1}/Graphs/{2}/pm10/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'calendar_plot'))
 
         # Caption
         fig.add_subplot(grid[19:20,:], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
         plt.text(
-            x=0, y=0, 
+            x=0, y=10, 
             s='\n\
-            These calendars show the daily average concentration of $PM_1$, $PM_{2.5}$, and $PM_{10}$ over the month.\n\
-            The color scale takes into account the WHO and EPA air quality standards of 5 μg/m³ and 12 μg/m³,\n\
-            respectively.',
+            Average daily concentration of PM1, PM2.5, and PM10. '.translate(SUB)+ 
+            'Dotted lines on the color scale represent NAAQS (upper limit) and WHO (lower limit)\n\
+            thresholds for healthy 24 h average PM concentrations. No official standards exist for PM1, so they are arbitrarily set here at 5 μg/m3 (upper\n\
+            limit) and 2 μg/m3 (lower limit). No color indicates insufficient data to calculate a mean.',
+            fontsize=6
+        )
+        plt.text(
+            x=0.28, y=0,
+            s='\n\
+            Report continues on next page',
             fontsize=8
         )
 
@@ -126,83 +166,89 @@ class ReportGenerator:
         folders = f'{self.year_month}/Reports/Pictures/{self.sn}'
         Path(folders).mkdir(parents=True, exist_ok=True)
         # Save first page
-        plt.savefig('{1}/Reports/Pictures/{0}/{1}_{2}_pg_2.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)
+        plt.savefig('{1}/Reports/Pictures/{0}/{1}_{2}_pg_1.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)
         plt.close()
 
         ############### SECOND PAGE ####################
         fig2 = plt.figure(figsize=(8.5,11))
-        grid2 = plt.GridSpec(20, 9, wspace=0.3, hspace=10)
-        graph_title_position = 0.98
-        graph_title_size = 15
+        grid2 = plt.GridSpec(20, 9, wspace=0.3, hspace=1)
 
-        ## Title
-        fig2.add_subplot(grid[:2,:], frameon=False)
+        ## Logos
+        fig2.add_subplot(grid2[:2,:1], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
-        plt.title('  {0} {1}: {2}'.format(dic_month[self.month], self.year, self.sn), fontsize=21, y=0.86)
+        air_img = plt.imread('_images/airpartners_logo.png', )
+        plt.imshow(air_img)
+
+        fig2.add_subplot(grid2[:2,8:], frameon=False)
+        plt.grid(0);plt.yticks([]);plt.xticks([])
+        ace_img = plt.imread('_images/ace_logo.png')
+        plt.imshow(ace_img)
         
-        ## Header
-        fig2.add_subplot(grid2[2:6,:], frameon=False)
+        ## Title
+        fig2.add_subplot(grid2[:2,:], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
-        plt.text(
-            x=0, y=0, 
-            s ='\n\
-            This report has data collected from the community owned air sensor network in\n\
-            Roxbury in collaboration with ACE. The sensors are QuantAQ ModulairTM PM and\n\
-            measure Particulate Matter (PM) from burning fossil fuels that is harmful to\n\
-            human health. If you have any questions or concerns, please contact\n\
-            <INSERT CONTACT INFO>.\n\n\
-            Glossary: \n\
-            Term 1: definition\n\
-            Term 2: definition\n\
-            Term 3: definition\n\
-            \tSubpoint\n\
-            \tSubpoint'
-        )
+        plt.title('Particulate Matter Monthly Summary', fontsize=14, weight='bold', y=0.86)
+        plt.suptitle('  {0} {1}: {2}'.format(dic_month[self.month], self.year, self.sn), fontsize=10, y=0.866)
         
         ## Polar plots
-        fig2.add_subplot(grid2[6:12,:3], frameon=False)
-        import_and_plot_img("wind_polar_plot", "pm1")
+        fig2.add_subplot(grid2[1:8,:3], frameon=False)
+        import_and_plot_img('{1}/Graphs/{2}/pm1/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'wind_polar_plot'))
 
-        fig2.add_subplot(grid2[6:12,3:6], frameon=False)
-        plt.title('PM Wind Polar Plots', y=graph_title_position,fontsize=graph_title_size)
-        import_and_plot_img("wind_polar_plot", "pm25")
+        fig2.add_subplot(grid2[1:8,3:6], frameon=False)
+        plt.title('PM and Wind', y=graph_title_position,fontsize=graph_title_size)
+        import_and_plot_img('{1}/Graphs/{2}/pm25/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'wind_polar_plot'))
 
-        fig2.add_subplot(grid2[6:12,6:9], frameon=False)
-        import_and_plot_img("wind_polar_plot", "pm10")
+        fig2.add_subplot(grid2[1:8,6:9], frameon=False)
+        import_and_plot_img('{1}/Graphs/{2}/pm10/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'wind_polar_plot'))
         # Caption
-        fig2.add_subplot(grid2[12:13,:], frameon=False)
+        fig2.add_subplot(grid2[7:8,:], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
         plt.text(
             x=0, y=0, 
             s='\n\
-            The above polar plots show concentrations of different PMs based on wind data. Yellow and red colors indicate\n\
-            where concentrations of $PM_1$, $PM_{2.5}$, and $PM_{10}$ are higher relative to the location of the sensor.',
-            fontsize=8
+            Polar plots indicate pollutant concentrations as a function of wind speed and wind direction. Pollutant concentrations (color scale) are\n\
+            plotted on a compass, with concentric circles representing wind speed (calm at the center, high wind speeds on the outside). Warm colors\n\
+            indicate the direction of likely sources of PM relative to the location of the sensor.',
+            fontsize=6
         )
 
         ## Diurnal plots
-        fig2.add_subplot(grid2[13:19,:3], frameon=False)
-        import_and_plot_img("diurnal_plot", "pm1")
+        fig2.add_subplot(grid2[8:13,:3], frameon=False)
+        import_and_plot_img('{1}/Graphs/{2}/pm1/weekday/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'diurnal_plot'))
 
-        fig2.add_subplot(grid2[13:19,3:6], frameon=False)
-        plt.title('PM Diurnal Plots', y=graph_title_position,fontsize=graph_title_size)
-        import_and_plot_img("diurnal_plot", "pm25")
+        fig2.add_subplot(grid2[8:13,3:6], frameon=False)
+        plt.title('Daily Trends in PM', y=graph_title_position,fontsize=graph_title_size)
+        import_and_plot_img('{1}/Graphs/{2}/pm25/weekday/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'diurnal_plot'))
 
-        fig2.add_subplot(grid2[13:19,6:9], frameon=False)
-        import_and_plot_img("diurnal_plot", "pm10")
+        fig2.add_subplot(grid2[8:13,6:9], frameon=False)
+        import_and_plot_img('{1}/Graphs/{2}/pm10/weekday/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'diurnal_plot'))
+
+        fig2.add_subplot(grid2[12:17,:3], frameon=False)
+        import_and_plot_img('{1}/Graphs/{2}/pm1/weekend/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'diurnal_plot'))
+
+        fig2.add_subplot(grid2[12:17,3:6], frameon=False)
+        import_and_plot_img('{1}/Graphs/{2}/pm25/weekend/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'diurnal_plot'))
+
+        fig2.add_subplot(grid2[12:17,6:9], frameon=False)
+        import_and_plot_img('{1}/Graphs/{2}/pm10/weekend/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'diurnal_plot'))
         # Caption
-        fig2.add_subplot(grid2[19:20,:], frameon=False)
+        fig2.add_subplot(grid2[15:20,:], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
         plt.text(
-            x=0, y=0, 
+            x=0, y=0.33, 
             s='\n\
-            The above plots show various metrics about the air quality by this sensor on a given day.\n\
-            (Add more text about those metrics here.)',
-            fontsize=8
+            Diurnal profiles represent a “typical” day in PM trends during the month for PM1, PM2.5, and PM10. '.translate(SUB)+
+            'Separate plots are made for weekdays and\n\
+            weekends. Lines indicate the median hourly averages for a typical day (purple; “what is the most likely concentration of a pollutant I might\n\
+            experience if I were standing at that sensor on a typical day?”), and the mean (red; “if I stood at that sensor for the entire month, what is\n\
+            the average concentration I experienced there?”). Shaded regions represent the middle 50% of data (25th-75th percentile) and the middle 90% of\n\
+            data (5th-95th percentile). When the mean line exceeds the median line, isolated plumes of high pollutant concentration can be assumed to be\n\
+            important.',
+            fontsize=6
         )
 
         # Save second page
-        plt.savefig('{1}/Reports/Pictures/{0}/{1}_{2}_pg_1.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)
+        plt.savefig('{1}/Reports/Pictures/{0}/{1}_{2}_pg_2.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)
         plt.close()
 
 
@@ -257,3 +303,4 @@ if __name__=='__main__':
         if not sn_dict[sn].empty:
             generate_report(month, year, sn)
             print(f"Finished report {sn}.")
+    # generate_report(6, 2022, "MOD-PM-00217")

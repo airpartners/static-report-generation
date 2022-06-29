@@ -5,6 +5,7 @@ Project: Air Partners
 Prototype of static reporting pipeline. Used primarily for testing scripts (for now).
 """
 
+from calendar import weekday
 import sys
 from import_data import DataImporter
 from create_plots import *
@@ -41,15 +42,18 @@ print('Timelines plotted')
 plt.close()
 
 # diurnal plots
-pl.plot_and_export(diurnal_plot, pm='pm1')
-pl.plot_and_export(diurnal_plot, pm='pm25')
-pl.plot_and_export(diurnal_plot, pm='pm10')
+pl.plot_and_export(diurnal_plot, pm='pm1', weekday=True)
+pl.plot_and_export(diurnal_plot, pm='pm25',weekday=True)
+pl.plot_and_export(diurnal_plot, pm='pm10',weekday=True)
+pl.plot_and_export(diurnal_plot, pm='pm1', weekday=False)
+pl.plot_and_export(diurnal_plot, pm='pm25',weekday=False)
+pl.plot_and_export(diurnal_plot, pm='pm10',weekday=False)
 print('Diurnals plotted')
 plt.close()
 
-# wind polar plots (computationally expensive)
-pl.plot_and_export(wind_polar_plot, pm='pm1')
-pl.plot_and_export(wind_polar_plot, pm='pm25')
-pl.plot_and_export(wind_polar_plot, pm='pm10')
-print('Wind polar plots plotted')
-plt.close()
+# # wind polar plots (computationally expensive)
+# pl.plot_and_export(wind_polar_plot, pm='pm1')
+# pl.plot_and_export(wind_polar_plot, pm='pm25')
+# pl.plot_and_export(wind_polar_plot, pm='pm10')
+# print('Wind polar plots plotted')
+# plt.close()

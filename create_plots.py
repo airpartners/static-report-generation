@@ -6,17 +6,17 @@ Script for creating and exporting all figures needed for static reporting.
 """
 
 import os
-import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from visualizers.calendar_plot import CalendarPlot
 from visualizers.timeplot_thresholds import Timeplot
+from visualizers.diurnal_plot import DiurnalPlot
 from data_analysis.dataviz import OpenAirPlots
 
+# Subscripts (for captions and labels)
+SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+
 def calendar_plot(data_PM, pm, month, year):
-    # Reformat data so only data from that month is plotted
-    data_PM = data_PM.set_index('timestamp').resample('1D').mean()
-    
     # Create calendar plot
     cal = CalendarPlot(pm, year, month)
     cal.add_pm_vals(data_PM)
@@ -29,33 +29,14 @@ def timeplot_threshold(data_PM):
     tp.show()
 
 
-def diurnal_plot(dataPM, pm):
-    label_dict = {'pm1': 'PM 1', 'pm25': 'PM 2.5', 'pm10': 'PM 10'}
-    # Resample dataframe to every 10 minutes for cleaner results
-    df = dataPM.set_index('timestamp').resample('10T').mean()
-    # Create time column for indexing
-    df['time'] = df.index.map(lambda x: x.strftime("%H:%M"))
-    # Groupby time and calculate different metrics
-    df = df.groupby('time')[pm]
-    df_mean = df.mean()
-    df_median = df.median()
-    df_q1 = df.quantile(q=0.25)
-    df_q3 = df.quantile(q=0.75)
-    df_05 = df.quantile(q=0.05)
-    df_95 = df.quantile(q=0.95)
-    # Plot results (note that df_mean.index returns time; can be replaced by any other metric to get index)
-    fig,axes=plt.subplots(1,1,figsize=(8,5))
-    axes.plot(df_mean.index,df_mean, label = 'mean', color='C0')
-    axes.plot(df_mean.index,df_median, label = 'median', color='C1')
-    axes.fill_between(df_mean.index,df_q1,df_q3, alpha=0.2, label = '25-75 percentile', color='C1')
-    axes.fill_between(df_mean.index,df_05,df_95, alpha=0.2, label = '5-95 percentile', color='C2')
-    # Adjust settings of plot
-    axes.xaxis.set_major_locator(MaxNLocator(15.8)) 
-    axes.legend()
-    axes.set_ylabel(f"{label_dict[pm]} [μg/m³]")
-    for tick in axes.get_xticklabels():
-        tick.set_rotation(45)
+def diurnal_plot(dataPM, pm, weekday=False):
+    # Create diurnal plot object
+    dp = DiurnalPlot(pm)
+    dataPM = dp.process_data(dataPM)
+    dp.show(dataPM, weekday)
 
+
+# Daily Average Plot scrapped; information displayed on calendar plot instead
 # def daily_average_plot(dataPM):
 #     dataPM_day = dataPM.set_index('timestamp').resample('1D').mean()
 #     plt.style.use('ggplot')
@@ -119,11 +100,29 @@ class Plotter(object):
                 os.mkdir('{0}/Graphs/{1}/{2}'.format(self.year_month, str(plot_function.__name__), pm))
             except: # Forgive my crime here, but it just avoids errors if the directory already exists
                 pass
+        # make directories for diurnals for weekdays and weekends
+        if str(plot_function.__name__)=='diurnal_plot':
+            try:
+                os.mkdir('{0}/Graphs/{1}/{2}/weekday'.format(self.year_month, str(plot_function.__name__), pm))
+                os.mkdir('{0}/Graphs/{1}/{2}/weekend'.format(self.year_month, str(plot_function.__name__), pm))
+            except:
+                pass
         for sn in self.sn_list:
             if not self.sn_dict[sn].empty:
                 if pm == None:
                     plot_function(self.sn_dict[sn], **kwargs)
                     plt.savefig('{1}/Graphs/{2}/{0}_{1}_{2}.jpeg'.format(sn, self.year_month, str(plot_function.__name__)), bbox_inches='tight',dpi = 300)
+                ### 
+                ### TODO: this function needs refactoring since directory structures for each plot is very different
+                ###
+                elif 'weekday' in kwargs:
+                    plot_function(self.sn_dict[sn], pm, **kwargs)
+                    if kwargs.get('weekday'):
+                        plt.savefig('{1}/Graphs/{2}/{3}/weekday/{0}_{1}_{2}.jpeg'.format(sn, self.year_month, str(plot_function.__name__), pm), bbox_inches='tight',dpi = 300)
+                        #print("Finished {1}/Graphs/{2}/{3}/weekday/{0}_{1}_{2}.jpeg".format(sn, self.year_month, str(plot_function.__name__), pm))
+                    else:
+                        plt.savefig('{1}/Graphs/{2}/{3}/weekend/{0}_{1}_{2}.jpeg'.format(sn, self.year_month, str(plot_function.__name__), pm), bbox_inches='tight',dpi = 300)
+                        #print("Finished {1}/Graphs/{2}/{3}/weekend/{0}_{1}_{2}.jpeg".format(sn, self.year_month, str(plot_function.__name__), pm))
                 else:
                     plot_function(self.sn_dict[sn], pm, **kwargs)
                     plt.savefig('{1}/Graphs/{2}/{3}/{0}_{1}_{2}.jpeg'.format(sn, self.year_month, str(plot_function.__name__), pm), bbox_inches='tight',dpi = 300)

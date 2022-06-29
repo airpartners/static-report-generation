@@ -1,5 +1,7 @@
 env
 token.txt
+mapbox_token.txt
+_images/locs/*
 app_password.txt
 pull_data.ipynb
 2022-06
