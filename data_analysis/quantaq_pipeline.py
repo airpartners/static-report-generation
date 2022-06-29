@@ -73,6 +73,8 @@ class DataHandler:
         self.data_cols = [col.strip("\n") for col in data_cols]
         self.start = start
         self.end = end
+        # create year_month string for naming top directories
+        self.year_month = str(start.year) + '-0' + str(start.month) if start.month<=9 else str(start.year) + '-' + str(start.month)
 
     def get_save_name(self, start=None, end=None, smoothed=True):
         """
@@ -247,7 +249,7 @@ class DataHandler:
         :returns: None
         """
         #create the save path, including missing folders, if it doesn't exist yet
-        folders = f"{self.start.year}-{self.start.month}/qaq_cleaned_data/{sensor}"
+        folders = f"{self.year_month}/qaq_cleaned_data/{sensor}"
         Path(folders).mkdir(parents=True, exist_ok=True)
         with open(os.path.join(folders, f"{self.get_save_name(smoothed=smoothed)}.pckl"), 'wb') as f:
             pickle.dump(df, f)
@@ -261,7 +263,7 @@ class DataHandler:
         :param smoothed: (optional bool) True if loading a smoothed dataframe
         :returns: loaded dataframe
         """
-        folders = f"{self.start.year}-{self.start.month}/qaq_cleaned_data/{sensor}"
+        folders = f"{self.year_month}/qaq_cleaned_data/{sensor}"
         save_name = self.get_save_name(smoothed=smoothed, start=start, end=end)
         with open(os.path.join(folders, f"{save_name}.pckl"), 'rb') as f:
             return pickle.load(f)
