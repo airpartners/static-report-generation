@@ -15,7 +15,10 @@ from data_analysis.iem import fetch_data
 import data_analysis.quantaq_pipeline as qp
 from create_maps import main
 
-client = quantaq.QuantAQAPIClient(api_key="VSZMMY8VT8FIRNIIXWTD2G7V")
+with open('token.txt', 'r') as f:
+    token = f.read()
+
+client = quantaq.QuantAQAPIClient(token)
 
 class DataImporter(object):
     """
