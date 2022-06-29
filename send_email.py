@@ -1,4 +1,4 @@
-import smtplib
+import smtplib, sys
 from pathlib import Path
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
@@ -49,13 +49,17 @@ def send_mail(send_from, send_to, subject, message, files=[],
     smtp.quit()
 
 if __name__ == '__main__':
-    # port = 465  # For SSL 
+
+    # get year and month from sys args
+    year, month = int(sys.argv[1]), int(sys.argv[2])
+    dateStr = f'{year}-{month}'
+    
     smtp_server = "smtp.gmail.com" 
-    sender_email = "theautomatedemail@gmail.com"  #put in your email address here 
-    receiver_email = "adecandia@olin.edu"  #put in your receiver email address here 
+    sender_email = "theautomatedemail@gmail.com"  #replace with airpartners email
     with open('app_password.txt', 'r') as f:
         password = f.read()
 
-    send_mail(send_from=sender_email, send_to=[receiver_email], subject='I hope this works',
-            message='This is the entire message body', files=['2022-05/Reports/MOD-PM-00217_2022-05_Report.jpeg'], 
-            server=smtp_server, username=sender_email, password=password)
+    send_mail(send_from=sender_email, send_to=['adecandia@olin.edu'], subject=f'Air Quality Reports {dateStr}',
+            message='These reports have been automatically generated based on last month\'s air quality data. \
+            If you want to know more about how these visuals were made, please visit airpartners.org',
+            files=[f'{dateStr}.zip'], server=smtp_server, username=sender_email, password=password)

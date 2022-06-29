@@ -31,3 +31,9 @@ sleep 5
 # generate reports (computationally expensive)
 python3 report_generation.py $year $month
 sleep 5
+
+python3 zip_directory.py $year $month
+sleep 2
+
+python3 send_email.py $year $month
+sleep 2
