@@ -13,6 +13,6 @@ def zip_directory(dirName):
 
 if __name__ == '__main__':
     # get year and month from sys args
-    year, month = int(sys.argv[1]), int(sys.argv[2])
+    year, month = sys.argv[1], sys.argv[2]
 
     zip_directory(f'{year}-{month}')

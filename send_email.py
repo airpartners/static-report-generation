@@ -51,7 +51,7 @@ def send_mail(send_from, send_to, subject, message, files=[],
 if __name__ == '__main__':
 
     # get year and month from sys args
-    year, month = int(sys.argv[1]), int(sys.argv[2])
+    year, month = sys.argv[1], sys.argv[2]
     dateStr = f'{year}-{month}'
     
     smtp_server = "smtp.gmail.com" 
@@ -60,6 +60,6 @@ if __name__ == '__main__':
         password = f.read()
 
     send_mail(send_from=sender_email, send_to=['adecandia@olin.edu'], subject=f'Air Quality Reports {dateStr}',
-            message='These reports have been automatically generated based on last month\'s air quality data. \
-            If you want to know more about how these visuals were made, please visit airpartners.org',
+            message='These reports have been automatically generated based on last month\'s air quality data. '+
+            'If you want to know more about how these visuals were made, please visit airpartners.org',
             files=[f'{dateStr}.zip'], server=smtp_server, username=sender_email, password=password)
