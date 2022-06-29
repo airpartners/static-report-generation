@@ -1,3 +1,11 @@
+"""
+Author: Neel Dhulipala
+Project: Air Partners
+
+Class for creating timeplots to show air quality trends throughout the month
+on a minute (sampling) basis.
+"""
+
 from IPython.core.pylabtools import figsize
 from matplotlib.offsetbox import AnchoredText
 import matplotlib.pyplot as plt
@@ -21,25 +29,26 @@ class Timeplot(object):
     def thresholds_subplots(self, plot_number, threshold_lower, threshold_upper, fig_axs):
         # time variable
         ts = self.df.timestamp
-
+        # subscripts for labels
+        SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
         # defining subplot numbers
         if plot_number == 0:
             pm = self.df.pm1
-            ylabel = 'PM 1'
-            ylim = (0, 25)
+            ylabel = 'PM1'.translate(SUB)
+            # ylim = (0, 25)
         elif plot_number == 1:
             pm = self.df.pm25
-            ylabel = 'PM 2.5'
-            ylim = (0, 100)
+            ylabel = 'PM2.5'.translate(SUB)
+            # ylim = (0, 100)
         elif plot_number == 2:
             pm = self.df.pm10
-            ylabel = 'PM 10'
-            ylim = (0, 200)
-        fig_axs[plot_number].fill_between(ts, pm, 0, where=(self.df.inactive == 0), facecolor="limegreen", interpolate=True, alpha=1,label='Good: < {}'.format(threshold_lower))
-        fig_axs[plot_number].fill_between(ts, pm, threshold_lower, where=(self.df.inactive == 0) & (pm >= threshold_lower), facecolor="gold", interpolate=False, alpha=1,label='Ok')
-        fig_axs[plot_number].fill_between(ts, pm, threshold_upper, where=(pm >= threshold_upper), facecolor="orangered", interpolate=False, alpha=1,label='Bad: > {}'.format(threshold_upper))
-        fig_axs[plot_number].set_ylabel('{}\n[μg/m³]'.format(ylabel))
-        fig_axs[plot_number].set_ylim(ylim)
+            ylabel = 'PM10'.translate(SUB)
+            # ylim = (0, 200)
+        fig_axs[plot_number].fill_between(ts, pm, 0, where=(self.df.inactive == 0), facecolor="limegreen", interpolate=True, alpha=1,label='Low: < {}'.format(threshold_lower))
+        fig_axs[plot_number].fill_between(ts, pm, threshold_lower, where=(self.df.inactive == 0) & (pm >= threshold_lower), facecolor="gold", interpolate=False, alpha=1,label='Medium')
+        fig_axs[plot_number].fill_between(ts, pm, threshold_upper, where=(pm >= threshold_upper), facecolor="orangered", interpolate=False, alpha=1,label='High: > {}'.format(threshold_upper))
+        fig_axs[plot_number].set_ylabel('{}\n[μg/m³]'.format(ylabel), fontsize=12)
+        #fig_axs[plot_number].set_ylim(ylim)
         
         handles, labels = fig_axs[plot_number].get_legend_handles_labels()
         fig_axs[plot_number].legend(handles[::-1], labels[::-1],bbox_to_anchor=(1.0,0.5),loc = 'center left')
@@ -50,7 +59,7 @@ class Timeplot(object):
             percent_above_upper = 0
 
         at = AnchoredText(
-            "{} % of the time above the upper limit".format(round((percent_above_upper * 100),1)), prop=dict(size=15), frameon=False, loc='upper right')
+            "{}% of time above 24h threshold for healthy air".format(round((percent_above_upper * 100),1)), prop=dict(size=15), frameon=False, loc='upper right')
             #at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
         fig_axs[plot_number].add_artist(at)
 
@@ -62,9 +71,10 @@ class Timeplot(object):
         # Check for inactive sensors
         self.detect_inactive_sensor(5)
 
-        # Threshold values assigned according to annual EPA standards
-        self.thresholds_subplots(0, 5, 10, axs)
-        self.thresholds_subplots(1, 10, 20, axs)
+        # Threshold values assigned according to annual EPA standards (PM1 estimated)
+        self.thresholds_subplots(0, 2, 5, axs)
+        self.thresholds_subplots(1, 5, 12, axs)
+        # TODO: assign values for PM10 according to EPA and WHO standards
         self.thresholds_subplots(2, 20, 35, axs)
 
         # Hide x labels and tick labels for all but bottom plot.

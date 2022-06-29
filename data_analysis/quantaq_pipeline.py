@@ -436,7 +436,7 @@ class ModPMHandler(DataHandler):
             df[['pressure', 'rh', 'temp']] = df.met.apply(pd.Series)
 
             #drop columns that contain dictionaries after flattening
-            df = df.drop(['neph', 'opc', 'geo', 'met'], axis=1)
+            df = df.drop(['neph', 'opc', 'met'], axis=1)
 
             # Remove all bin columns from dataframe. 
             df = df[df.columns.drop(list(df.filter(regex='bin')))]
@@ -445,7 +445,7 @@ class ModPMHandler(DataHandler):
             df = df.drop(['timestamp_local', 'url', 'opc_rh', 'opc_temp', 'pressure'], axis = 1)
         else:
             df[['rh', 'temp']] = df.met.apply(pd.Series)
-            df = df.drop(['geo', 'url', 'met', 'timestamp_local'], axis = 1)
+            df = df.drop(['url', 'met', 'timestamp_local'], axis = 1)
 
         #drop duplicate rows. Timestamps don't properly get recognized as duplicates, so use data_cols.
         df = df.drop_duplicates(subset = self.data_cols, ignore_index=True)

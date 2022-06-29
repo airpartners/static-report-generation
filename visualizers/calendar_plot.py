@@ -27,8 +27,14 @@ class CalendarPlot(object):
         self.year = year
         self.month = month
         self.pm = pm
-        # Dictionary for labeling calendar axis
-        label_dict = {'pm1': ('PM1', 10, 5, 2), 'pm25': ('PM2.5', 20, 12, 5), 'pm10': ('PM10', 40, 25, 12)}
+        # Subscripts for labels
+        SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+        # Dictionary for labeling calendar axis {keyword: (label, colorscale max, high threshold, low threshold)}
+        label_dict = {
+            'pm1': ('PM1'.translate(SUB), 8, 5, 2),
+            'pm25': ('PM2.5'.translate(SUB), 20, 12, 5),
+            'pm10': ('PM10'.translate(SUB), 50, 35, 20)
+        }
         self.label = label_dict[pm][0]
         # Color scale maximum for different PMs
         self.scale = label_dict[pm][1]
@@ -74,12 +80,14 @@ class CalendarPlot(object):
         Assign PM value for each day in the month based on air quality DataFrame
         """
         # Check if the date at which data is generated is happening within designated month
-        # and year; if it is, set end_date to today; otherwise, set it to last day of month
-        today = date.today()
-        if self.month==today.month and self.year==today.year:
-            end_date = today.day
+        # and year; if it is, set end_date to most recent day; otherwise, set it to last day of month
+        recent = df.iloc[-1]['timestamp']
+        if self.month==recent.month and self.year==recent.year:
+            end_date = recent.day
         else:
             end_date = calendar.monthrange(self.year, self.month)[1]
+        # Reformat data so only data from that month is plotted
+        df = df.set_index('timestamp').resample('1D').mean()
         start_date = end_date - df.shape[0]
         # Doing days in reversed order, for the case that a sensor was 
         # installed in middle of month
@@ -130,7 +138,7 @@ class CalendarPlot(object):
         f.subplots_adjust(hspace=0)
         f.subplots_adjust(wspace=0)
         f.subplots_adjust(right=0.8)
-        f.suptitle(m_names[self.month-1] + ' ' + str(self.year) + '\n',
+        f.suptitle(self.label + ' ' + m_names[self.month-1] + ' ' + str(self.year) + '\n',
                    fontsize=16, fontweight='bold')
         
         # Add colorbar
@@ -138,8 +146,8 @@ class CalendarPlot(object):
         norm = matplotlib.colors.Normalize(vmin=0, vmax=self.scale)
         cbar = f.colorbar(matplotlib.cm.ScalarMappable(norm=norm, 
                                                 cmap='Spectral_r'), 
-                                                cax=cbar_ax, 
-                                                label=f'Concentrations of {self.label} [μg/m³]')
+                                                cax=cbar_ax)
+        cbar.set_label(label=f'{self.label} [μg/m³]', fontsize=12)
         # Add dashed lines on colorbar representing key thresholds
         cbar.ax.hlines(self.high_thresh, 0, 2.5, colors='black', linestyles='dotted', linewidth=2)
         cbar.ax.hlines(self.low_thresh, 0, 2.5, colors='black', linestyles='dotted', linewidth=2)

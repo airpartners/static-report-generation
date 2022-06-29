@@ -13,12 +13,9 @@ from quantaq.utils import to_dataframe
 from datetime import datetime
 from data_analysis.iem import fetch_data
 import data_analysis.quantaq_pipeline as qp
+from create_maps import main
 
 client = quantaq.QuantAQAPIClient(api_key="VSZMMY8VT8FIRNIIXWTD2G7V")
-
-# STATICS (for testing)
-YEAR = 2022
-MONTH = 4
 
 class DataImporter(object):
     """
@@ -86,6 +83,7 @@ class DataImporter(object):
 
 
 if __name__ == '__main__':
-    (year, month) = (sys.argv[1], sys.argv[2]) if len(sys.argv)==2 else (YEAR, MONTH)
-    di = DataImporter(year=year, month=month)
+    (year, month) = (sys.argv[1], sys.argv[2])
+    di = DataImporter(year=int(year), month=int(month))
     sn_list, sn_dict = di.get_PM_data()
+    main(sn_list, sn_dict)

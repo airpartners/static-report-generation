@@ -130,7 +130,7 @@ class OpenAirPlots:
                                     height=height, 
                                     mydata=r_df, 
                                     pollutant=p,
-                                    main=f'{p} Concentrations (ug/m3)', 
+                                    main=f'{p} (ug/m3)', 
                                     statistic='nwr',
                                     col="jet")
             ro.r('rm(list = ls())')
