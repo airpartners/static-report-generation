@@ -28,17 +28,17 @@ class ReportGenerator:
     def _create_report_image(self):
         """
         Create JPEG file of static report with compiled visualizations and captions.
+        
+        :returns: none, makes an image file
         """
         
         def import_and_plot_img(img_path):
             """
             Get PNG files of graphs created for report.
 
-            Args:
-                plot_function: string representing function used to create plot.
-                pm: string with particulate matter for graph, set to None for timeplot
-            Returns:
-                None
+            :param plot_function: string representing function used to create plot.
+            :param pm: string with particulate matter for graph, set to None for timeplot
+            :returns: none
             """
 
             plt.grid(0);plt.yticks([]);plt.xticks([])
