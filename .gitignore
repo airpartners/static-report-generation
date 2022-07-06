@@ -1,6 +1,8 @@
 env
 token.txt
 mapbox_token.txt
+credentials.json
+token.json
 _images/locs/*
 app_password.txt
 pull_data.ipynb

@@ -14,6 +14,7 @@ from datetime import datetime
 from data_analysis.iem import fetch_data
 import data_analysis.quantaq_pipeline as qp
 from create_maps import main
+from pull_from_drive import pull_sensor_install_data
 
 with open('token.txt', 'r') as f:
     token = f.read()
@@ -29,7 +30,7 @@ class DataImporter(object):
         self.year = year
         self.month = month
 
-    def get_sensor_list(self):
+    def get_all_sensor_list(self):
         """
         Retrieves a list of sensor names from QuantAQ API.
 
@@ -40,6 +41,33 @@ class DataImporter(object):
         devices_simplified = devices_raw.iloc[:,[4,3,11,15,16,5,7,8,10,12]]
         return devices_simplified, devices_raw
 
+    def get_installed_sensor_list(self):
+        """
+        Pull sensor installation notes from google drive and create list of all sensors with data for the given month.
+
+        :returns: a list of serial numbers for all sensors that were installed that month
+        """
+        start_date, end_date = self._get_start_end_dates(self.year, self.month)
+
+
+        pull_sensor_install_data()
+        df = pd.read_csv('sensor_install_data.csv')
+        df = df[["Timestamp", "Select action", "Sensor serial number (SN)", "Date", "Time", "Location site"]]
+
+        df = df.rename(columns={'Sensor serial number (SN)' : 'sn', 'Select action' : 'action'})
+        df['action'] = df['action'].str.extract(r'sensor (.*)$')
+
+        print(df)
+
+        active_sensors = []
+
+        for row in df.itertuples():
+            if row.sn not in active_sensors and row.action == 'installation' and pd.to_datetime(row.Date) < end_date:
+                active_sensors.append(row.sn)
+            elif row.sn in active_sensors and row.action == 'removal' and pd.to_datetime(row.Date) < start_date:
+                active_sensors.remove(row.sn)
+
+        return active_sensors
 
     def _data_month(self, sensor_sn):
         """
@@ -92,9 +120,7 @@ class DataImporter(object):
         :returns: A list of all sensors available from QuantAQ API
         :returns: A dictionary with sensor serial numbers as keys and pandas dataframes containing sensor data as values
         """
-        df_sensor_list, _ = self.get_sensor_list()
-
-        sn_list = list(df_sensor_list.sn)
+        sn_list = self.get_installed_sensor_list()
         sn_count = len(sn_list)
         sn_dict = {}
 
