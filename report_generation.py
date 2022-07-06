@@ -125,9 +125,9 @@ class ReportGenerator:
         plt.text(
             x=0, y=-2, 
             s='\n\
-            Time series for PM1, PM2.5, and PM10 for the entire month. '.translate(SUB)+
-            'Upper thresholds represent National Ambient Air Quality (NAAQS) 24 h standards,\n\
-            and lower limits represent World Health Organization (WHO) 24 h standards. No official standards exist for PM1, so they are arbitrarily set\n\
+            Time series for PM1, PM2.5, and PM10 for the entire month. Upper thresholds represent National Ambient Air Quality (NAAQS) 24 h standards,\n\
+            and lower limits represent World Health Organization (WHO) 24 h standards. No official standards exist for PM1 '.translate(SUB)+
+            ', so they are arbitrarily set\n\
             here at 5 μg/m3 (upper limit) and 2 μg/m3 (lower limit).',
             fontsize=6
         )
@@ -237,13 +237,11 @@ class ReportGenerator:
         plt.text(
             x=0, y=0.33, 
             s='\n\
-            Diurnal profiles represent a “typical” day in PM trends during the month for PM1, PM2.5, and PM10. '.translate(SUB)+
-            'Separate plots are made for weekdays and\n\
-            weekends. Lines indicate the median hourly averages for a typical day (purple; “what is the most likely concentration of a pollutant I might\n\
-            experience if I were standing at that sensor on a typical day?”), and the mean (red; “if I stood at that sensor for the entire month, what is\n\
-            the average concentration I experienced there?”). Shaded regions represent the middle 50% of data (25th-75th percentile) and the middle 90% of\n\
-            data (5th-95th percentile). When the mean line exceeds the median line, isolated plumes of high pollutant concentration can be assumed to be\n\
-            important.',
+            These daily average plots (or diurnal profiles) represent a “typical” day in PM trends during the month for PM1, PM2.5, and PM10. '.translate(SUB)+
+            'Separate plots are\n\
+            made for weekdays and weekends. Lines indicate the median concentrations (purple; “what is the amount of PM I am most likely to be\n\
+            exposed to on a typical day?”), and the mean (red; “what is the amount of PM I was exposed to on average over the past month?”).\n\
+            Shaded regions represent the middle 50% of data (25th-75th percentile) and the middle 90% of data (5th-95th percentile).',
             fontsize=6
         )
 

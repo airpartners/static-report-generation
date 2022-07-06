@@ -61,11 +61,11 @@ def wind_polar_plot(data_PM, pm):
 
     # Format the dataPM to be read in R and plot wind data
     air_plt = OpenAirPlots()
-    air_plt.polar_plot(df, '2022-04/Graphs/wind_polar_plot/', [pm])
+    air_plt.polar_plot(df, 'utils/', [pm])
     #ro.r.polarPlot(dataPM, pollutant = p, main = f"{p.upper()} Polar Plot")
     
     # Take current image, save image again using matplotlib
-    img = plt.imread(fname=f'2022-04/Graphs/wind_polar_plot/_polar_{pm}.png')
+    img = plt.imread(fname=f'utils/_polar_{pm}.png')
     plt.figure(frameon=False)
     plt.imshow(img)
     plt.grid(None)

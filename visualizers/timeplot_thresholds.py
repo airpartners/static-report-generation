@@ -11,6 +11,9 @@ from matplotlib.offsetbox import AnchoredText
 import matplotlib.pyplot as plt
 
 class Timeplot(object):
+    """
+    
+    """
 
     def __init__(self, df):
         self.df = df

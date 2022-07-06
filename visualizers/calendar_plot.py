@@ -3,6 +3,8 @@ Author: Neel Dhulipala
 Project: Air Partners
 
 Class for creating calendar plots reporting air quality on monthly basis.
+
+Partially creditted to @meta4. https://github.com/meta4/mplcal
 """
 
 import calendar
@@ -24,6 +26,12 @@ class CalendarPlot(object):
     Class including functions needed for creating calendar plots.
     """
     def __init__(self, pm, year, month):
+        """
+        Args:
+            pm: (str) identifies particular PM that is being analyzed (PM1, PM2.5, or PM10)
+            year: (int) year when this data is from
+            month: (int) month when this data is from
+        """
         self.year = year
         self.month = month
         self.pm = pm
@@ -78,6 +86,9 @@ class CalendarPlot(object):
     def add_pm_vals(self, df):
         """
         Assign PM value for each day in the month based on air quality DataFrame
+
+        Args:
+            df: (pandas.DataFrame) cleaned dataset of air quality over past month
         """
         # Check if the date at which data is generated is happening within designated month
         # and year; if it is, set end_date to most recent day; otherwise, set it to last day of month
@@ -103,6 +114,7 @@ class CalendarPlot(object):
         """
         Create the calendar to be displayed
         """
+        # Create color spectrum
         color_list = self._get_colors()
 
         # Create grid of subplots, where each subplot is a day in the calendar

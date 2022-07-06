@@ -8,7 +8,7 @@ Prototype of static reporting pipeline. Used primarily for testing scripts (for 
 from calendar import weekday
 import sys
 from import_data import DataImporter
-from create_plots import *
+from utils.create_plots import *
 from report_generation import generate_report
 import data_analysis.quantaq_pipeline as qp
 from datetime import datetime

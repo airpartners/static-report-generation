@@ -22,9 +22,9 @@ year=$(date '+%Y')
 
 echo "Date": $year-$month
 
-# import data
-python3 import_data.py $year $month
-sleep 5
+# # import data
+# python3 import_data.py $year $month
+# sleep 5
 
 # create plots
 python3 plots.py $year $month
@@ -38,10 +38,6 @@ sleep 5
 python3 report_generation.py $year $month
 sleep 5
 
-# zip all reports and figures
-python3 zip_directory.py $year $month
-sleep 2
-
-# send automatic email
+# send automatic email with zip file
 python3 send_email.py $year $month
 sleep 2
