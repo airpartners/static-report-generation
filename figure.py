@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 from calendar import monthrange
 from datetime import datetime
 import data_analysis.quantaq_pipeline as qp
-from create_plots import *
+from utils.create_plots import *
 import sys
 
 # Following _ functions are helpers that call plotting functions

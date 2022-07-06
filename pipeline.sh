@@ -30,9 +30,9 @@ echo "Date": $year-$month
 python3 plots.py $year $month
 sleep 5
 
-# create moor plots
-python3 wind_polar_plots.py $year $month
-sleep 5
+# # create moor plots
+# python3 wind_polar_plots.py $year $month
+# sleep 5
 
 # generate reports (computationally expensive)
 python3 report_generation.py $year $month

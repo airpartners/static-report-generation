@@ -22,7 +22,7 @@ class DiurnalPlot(object):
         """
         self.pm = pm
     
-    def process_data(self, df, get_weekdays=True, resampling=False):
+    def process_data(self, df, get_weekdays=True, resampling=True):
         """
         Process dataframe for plotting.
 
@@ -90,8 +90,9 @@ class DiurnalPlot(object):
             axes.xaxis.set_major_locator(MaxNLocator(15.8)) 
             axes.legend()
             if weekday:
-                axes.set_ylabel(f"{label_dict[self.pm]} [μg/m³] Weekday", fontsize=12)
+                axes.set_ylabel(f"{label_dict[self.pm]} [μg/m³] Weekday", fontsize=15)
             else:
-                axes.set_ylabel(f"{label_dict[self.pm]} [μg/m³] Weekend", fontsize=12)
+                axes.set_ylabel(f"{label_dict[self.pm]} [μg/m³] Weekend", fontsize=15)
             for tick in axes.get_xticklabels():
                 tick.set_rotation(45)
+                tick.set_fontsize(12)

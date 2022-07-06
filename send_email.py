@@ -78,9 +78,9 @@ if __name__ == '__main__':
 
     send_mail(send_from=sender_email, send_to=['ndhulipala@olin.edu'], subject=f'Air Quality Reports {year_month}',
             message='These reports have been automatically generated based on last month\'s air quality data. '+
-            'If you want to know more about how these visuals were made, please visit airpartners.org.\n\n\
-            Please note that at the end of this month, the current zip file will be deleted and replaced\
-            with this month\'s data.\n\n\
-            https://www.dropbox.com/sh/spwnq0yqvjvewax/AADk0c2Tum-7p_1ul6xiKzrPa?dl=0 \n\n\
-            Best regards,\nAir Partners',
+            'If you want to know more about how these visuals were made, please visit airpartners.org.\n\n' +
+            'Please note that at the end of this month, the current zip file will be deleted and replaced' +
+            ' with this month\'s data.\n\n' +
+            'https://www.dropbox.com/sh/spwnq0yqvjvewax/AADk0c2Tum-7p_1ul6xiKzrPa?dl=0 \n\n' +
+            'Best regards,\nAir Partners',
             server=smtp_server, username=sender_email, password=password)
