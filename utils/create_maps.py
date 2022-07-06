@@ -46,10 +46,13 @@ def show(df, sn_list):
         layout = dict(margin=dict(l=0, t=0, r=0, b=0, pad=0),
                 mapbox=dict(accesstoken=MAPBOX_TOKEN,
                             center=dict(lat=df['lats'][sn], lon=df['longs'][sn]),
-                            style='light',
+                            style='basic',
                             zoom=14))
         fig = go.Figure(data=data, layout=layout)
         
+        
+        # creates image twice in case figure not fully complete by first iteration
+        fig.write_image(f'_images/locs/{sn}.png')
         fig.write_image(f'_images/locs/{sn}.png')
 
 def main(sn_list, sn_dict):

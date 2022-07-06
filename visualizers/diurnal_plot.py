@@ -12,7 +12,14 @@ from matplotlib.ticker import MaxNLocator
 SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
 
 class DiurnalPlot(object):
+    """
+    Class for creating diurnal (daily) plots.
+    """
     def __init__(self, pm):
+        """
+        Args:
+            pm: (str) type of PM used for analysis
+        """
         self.pm = pm
     
     def process_data(self, df, get_weekdays=True, resampling=False):
@@ -29,7 +36,8 @@ class DiurnalPlot(object):
             df['weekday'] = [df.iloc[row]['timestamp'].weekday() < 5 for row in range(df.shape[0])]
         
         # if resampling, resample dataframe for every 10 minutes
-        df = df.set_index('timestamp').resample('10T').mean()
+        if resampling:
+            df = df.set_index('timestamp').resample('10T').mean()
         
         # Create time column for indexing
         df['time'] = df.index.map(lambda x: x.strftime("%H:%M"))       
@@ -38,10 +46,17 @@ class DiurnalPlot(object):
     
 
     def show(self, df, weekday=True):
+        """
+        Create diurnal plot figure that can be shown on report.
+
+        Args:
+            df: (pandas.DataFrame) cleaned dataset containing air quality data of the month
+            weekday: (bool) if True, create diurnal plot for weekdays; if False, for weekends
+        """
         label_dict = {
             'pm1': 'PM1'.translate(SUB),
-            'pm25': 'PM 2.5'.translate(SUB),
-            'pm10': 'PM 10'.translate(SUB)
+            'pm25': 'PM2.5'.translate(SUB),
+            'pm10': 'PM10'.translate(SUB)
         }
         # If weekday, filter out rows that are weekends, and vice versa
         if 'weekday' in df:
@@ -65,6 +80,7 @@ class DiurnalPlot(object):
             error = plt.imread('_images/error-404.png')
             axes.set_xticks([]); axes.set_yticks([])
             axes.imshow(error)
+        # otherwise, plot the data, creating solid lines for mean and median and shadings for percentile differences
         else:
             axes.plot(df_mean.index,df_mean, label = 'mean', color='red')
             axes.plot(df_mean.index,df_median, label = 'median', color='purple')
