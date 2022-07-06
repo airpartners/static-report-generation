@@ -36,14 +36,11 @@ class DataImporter(object):
 
     def get_sensor_list(self):
         """
-<<<<<<< HEAD
         Gets the list of sensors currently within Roxbury QuantAQ database.
-=======
         Retrieves a list of sensor names from QuantAQ API.
 
         :returns: A filtered list of sensor information
         :returns: A list of all sensor information
->>>>>>> fa74d4dbc618cea537585fd8c5221f9fd9a13628
         """
         devices_raw = to_dataframe(client.devices.list(filter="city,like,%_oxbury%"))
         devices_simplified = devices_raw.iloc[:,[4,3,11,15,16,5,7,8,10,12]]
@@ -52,21 +49,12 @@ class DataImporter(object):
 
     def _data_month(self, sensor_sn):
         """
-<<<<<<< HEAD
-        Downloads data from sensor for a particular month (specified in __init__)
-
-        Args:
-            sensor_sn: (str) ID of sensor from which to download data
-        """
-        # get start and end dates of the month
-=======
         Gets data for a specific sensor.
         If data doesn't already exist in a pickle file, data is pulled from QuantAQ API.
 
         :param sensor_sn: (str) The serial number of the sensor to pull data for
         :returns: A pandas dataframe containing all of the sensor data for the month
         """
->>>>>>> fa74d4dbc618cea537585fd8c5221f9fd9a13628
         start_date, end_date = self._get_start_end_dates(self.year, self.month)
         # instantiate handler used to download data
         mod_handler = qp.ModPMHandler(start_date=start_date, end_date=end_date)
@@ -88,13 +76,6 @@ class DataImporter(object):
 
     def _get_start_end_dates(self, year_int_YYYY, month_int):
         """
-<<<<<<< HEAD
-        Gets the start and end dates for a given month and year.
-
-        Args:
-            year_int_YYYY: (int) the particular year
-            month_int: (int) the given month
-=======
         Creates datetime objects for the start and end of the specified month.
 
         :param year_int_YYYY: (int) The year
@@ -102,7 +83,6 @@ class DataImporter(object):
         
         :returns: DateTime object for the first day of the month
         :returns: DateTime object for the last day of the month
->>>>>>> fa74d4dbc618cea537585fd8c5221f9fd9a13628
         """
         # get number of days in month_int of that year
         no_of_days = monthrange(year_int_YYYY, month_int)[1]
@@ -113,14 +93,10 @@ class DataImporter(object):
 
     def get_PM_data(self):
         """
-<<<<<<< HEAD
-        Downloads the data from all available sensors in the given month and year.
-=======
         Collects data from all sensors for the month.
 
         :returns: A list of all sensors available from QuantAQ API
         :returns: A dictionary with sensor serial numbers as keys and pandas dataframes containing sensor data as values
->>>>>>> fa74d4dbc618cea537585fd8c5221f9fd9a13628
         """
         # Get list of sensors, where this function returns two pandas.DataFrames of the devices
         df_sensor_list, _ = self.get_sensor_list()
