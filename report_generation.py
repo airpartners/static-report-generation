@@ -114,17 +114,17 @@ class ReportGenerator:
 
 
         ## Polar plots
-        fig.add_subplot(grid[6:13,:3], frameon=False)
+        fig.add_subplot(grid[5:12,:3], frameon=False)
         import_and_plot_img('{1}/Graphs/{2}/pm1/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'wind_polar_plot'))
 
-        fig.add_subplot(grid[6:13,3:6], frameon=False)
+        fig.add_subplot(grid[5:12,3:6], frameon=False)
         plt.title('PM and Wind', y=graph_title_position,fontsize=graph_title_size)
         import_and_plot_img('{1}/Graphs/{2}/pm25/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'wind_polar_plot'))
 
-        fig.add_subplot(grid[6:13,6:9], frameon=False)
+        fig.add_subplot(grid[5:12,6:9], frameon=False)
         import_and_plot_img('{1}/Graphs/{2}/pm10/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'wind_polar_plot'))
         # Caption
-        fig.add_subplot(grid[12:13,:], frameon=False)
+        fig.add_subplot(grid[11:12,:], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
         plt.text(
             x=0, y=0, 
@@ -136,24 +136,26 @@ class ReportGenerator:
         )
 
         ## Timeplots with Thresholds
-        fig.add_subplot(grid[13:19,:], frameon=False)
+        fig.add_subplot(grid[12:18,:], frameon=False)
         plt.title('Particulate Matter Time Series', y=graph_title_position,fontsize=graph_title_size)
         import_and_plot_img('{1}/Graphs/{2}/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'timeplot_threshold'))
         # Caption
-        fig.add_subplot(grid[19:20,:], frameon=False)
+        fig.add_subplot(grid[18:19,:], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
         plt.text(
-            x=0, y=-2, 
+            x=0, y=-0, 
             s='\n\
-            Time series for PM1, PM2.5, and PM10 for the entire month. Upper thresholds represent National Ambient Air Quality (NAAQS) 24 h standards,\n\
-            and lower limits represent World Health Organization (WHO) 24 h standards. No official standards exist for PM1 '.translate(SUB)+
+            Time series for PM1, PM2.5, and PM10 for the entire month. '.translate(SUB)+
+            'Upper thresholds represent National Ambient Air Quality (NAAQS) 24 h standards,\n\
+            and lower limits represent World Health Organization (WHO) 24 h standards. '+
+            'No official standards exist for PM1 '.translate(SUB)+
             ', so they are arbitrarily set\n\
             here at 5 μg/m3 (upper limit) and 2 μg/m3 (lower limit).',
             fontsize=6
         )
 
         plt.text(
-            x=0.28, y=0,
+            x=0.28, y=-7,
             s='\n\
             Report continues on next page',
             fontsize=8
@@ -202,7 +204,7 @@ class ReportGenerator:
         fig2.add_subplot(grid2[7:8,:], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
         plt.text(
-            x=0, y=10, 
+            x=0, y=2, 
             s='\n\
             Average daily concentration of PM1, PM2.5, and PM10. '.translate(SUB)+ 
             'Dotted lines on the color scale represent NAAQS (upper limit) and WHO (lower limit)\n\
@@ -234,7 +236,7 @@ class ReportGenerator:
         fig2.add_subplot(grid2[15:20,:], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
         plt.text(
-            x=0, y=0.33, 
+            x=0, y=0.5, 
             s='\n\
             These daily average plots (or diurnal profiles) represent a “typical” day in PM trends during the month for PM1, PM2.5, and PM10. '.translate(SUB)+
             'Separate plots are\n\
@@ -289,14 +291,14 @@ class ReportGenerator:
 
 
 if __name__=='__main__':
-    # get year and month from sys args
-    year, month = int(sys.argv[1]), int(sys.argv[2])
-    # Import sensor data from pickles
-    di = DataImporter(year=year, month=month)
-    sn_list = di.get_installed_sensor_list()
+    # # get year and month from sys args
+    # year, month = int(sys.argv[1]), int(sys.argv[2])
+    # # Import sensor data from pickles
+    # di = DataImporter(year=year, month=month)
+    # sn_list = di.get_installed_sensor_list()
 
-    # generate reports for each sensor
-    for sn in sn_list:
-        generate_report(month, year, sn)
-        print(f"Finished report {sn}.")
-    # generate_report(6, 2022, "MOD-PM-00217")
+    # # generate reports for each sensor
+    # for sn in sn_list:
+    #     generate_report(month, year, sn)
+    #     print(f"Finished report {sn}.")
+    generate_report(6, 2022, "MOD-PM-00217")

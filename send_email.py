@@ -63,8 +63,12 @@ if __name__ == '__main__':
     year_month_prev = str(year_p) + '-0' + str(month_p) if month_p<=9 else str(year_p) + '-' + str(month_p)
     # create zip file
     zip_directory(year_month)
-    # upload zip file to Dropbox
-    upload_zip(year_month)
+    # upload zip file to Dropbox; if file already exists, replace it
+    try:
+        upload_zip(year_month)
+    except:
+        delete_zip(year_month)
+        upload_zip(year_month)
     # delete last month's zip if it exists
     try:
         delete_zip(year_month_prev)

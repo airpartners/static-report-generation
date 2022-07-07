@@ -5,6 +5,7 @@ Project: Air Partners
 Class for creating diurnal (daily) plots that show air quality trends on any weekday and weekend.
 """
 
+import pandas as pd
 import numpy as np
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -24,6 +25,27 @@ class DiurnalPlot(object):
         """
         self.pm = pm
     
+    def convert_timestamps(self, df):
+        """
+        Convert all timestamp strings to datetime objects
+
+        :param df: (pd.DataFrame) dataframe containing sensor data
+        :returns: df with timestamps converted to datetime
+
+        Code copied from quantaq_pipeline.py, written by Hwei-Shin Harrimam
+        """
+        #timestamp is already in UTC
+        df = df.assign(timestamp=pd.to_datetime(df['timestamp']))
+        # timestamp contains "local" time (but expresses it in UTC, so 18:59 Eastern is expressed as 18:59 UTC)
+        # need to change the timezone without altering the hour of day.
+        # So, convert to datetime, remove automatically applied UTC timezone, and convert to US/Eastern time.
+        dti = pd.to_datetime(df['timestamp']).dt.tz_localize(None).dt.tz_localize('US/Eastern')
+        df = df.assign(timestamp_local=dti)
+
+        #order by timestamp asc instead of desc
+        df = df.sort_values(by=['timestamp'])
+        return df
+    
     def process_data(self, df, get_weekdays=True, resampling=True):
         """
         Process dataframe for plotting.
@@ -33,6 +55,8 @@ class DiurnalPlot(object):
             get_weekdays: (bool) if True, creates column in df to specify weekdays and weekends
             resampling: (bool) if True, resamples dataset by every 10 minutes for cleaner graph
         """
+        # localize timestamps
+        df = self.convert_timestamps(df)
         # if get_weekdays, add boolean column 'weekday' where 1 represents weekday, 0 represents weekend
         if get_weekdays:
             df['weekday'] = [df.iloc[row]['timestamp'].weekday() < 5 for row in range(df.shape[0])]
