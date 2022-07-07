@@ -291,14 +291,14 @@ class ReportGenerator:
 
 
 if __name__=='__main__':
-    # # get year and month from sys args
-    # year, month = int(sys.argv[1]), int(sys.argv[2])
-    # # Import sensor data from pickles
-    # di = DataImporter(year=year, month=month)
-    # sn_list = di.get_installed_sensor_list()
+    # get year and month from sys args
+    year, month = int(sys.argv[1]), int(sys.argv[2])
+    # Import sensor data from pickles
+    di = DataImporter(year=year, month=month)
+    sn_list = di.get_installed_sensor_list()
 
-    # # generate reports for each sensor
-    # for sn in sn_list:
-    #     generate_report(month, year, sn)
-    #     print(f"Finished report {sn}.")
-    generate_report(6, 2022, "MOD-PM-00217")
+    # generate reports for each sensor
+    for sn in sn_list:
+        generate_report(month, year, sn)
+        print(f"Finished report {sn}.")
+    # generate_report(6, 2022, "MOD-PM-00217")
