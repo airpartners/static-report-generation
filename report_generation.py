@@ -111,16 +111,36 @@ class ReportGenerator:
         fig.add_subplot(grid[2:6,5:9], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
         import_and_plot_img('_images/locs/{0}.png'.format(self.sn))
-        # Add circle for radius of effect
-        plt.Circle((350,250), radius=50, color="blue")
-        
+
+
+        ## Polar plots
+        fig.add_subplot(grid[6:13,:3], frameon=False)
+        import_and_plot_img('{1}/Graphs/{2}/pm1/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'wind_polar_plot'))
+
+        fig.add_subplot(grid[6:13,3:6], frameon=False)
+        plt.title('PM and Wind', y=graph_title_position,fontsize=graph_title_size)
+        import_and_plot_img('{1}/Graphs/{2}/pm25/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'wind_polar_plot'))
+
+        fig.add_subplot(grid[6:13,6:9], frameon=False)
+        import_and_plot_img('{1}/Graphs/{2}/pm10/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'wind_polar_plot'))
+        # Caption
+        fig.add_subplot(grid[12:13,:], frameon=False)
+        plt.grid(0);plt.yticks([]);plt.xticks([])
+        plt.text(
+            x=0, y=0, 
+            s='\n\
+            Polar plots indicate pollutant concentrations as a function of wind speed and wind direction. Pollutant concentrations (color scale) are\n\
+            plotted on a compass, with concentric circles representing wind speed (calm at the center, high wind speeds on the outside). Warm colors\n\
+            indicate the direction of likely sources of PM relative to the location of the sensor.',
+            fontsize=6
+        )
 
         ## Timeplots with Thresholds
-        fig.add_subplot(grid[6:12,:], frameon=False)
+        fig.add_subplot(grid[13:19,:], frameon=False)
         plt.title('Particulate Matter Time Series', y=graph_title_position,fontsize=graph_title_size)
         import_and_plot_img('{1}/Graphs/{2}/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'timeplot_threshold'))
         # Caption
-        fig.add_subplot(grid[12:13,:], frameon=False)
+        fig.add_subplot(grid[19:20,:], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
         plt.text(
             x=0, y=-2, 
@@ -132,29 +152,6 @@ class ReportGenerator:
             fontsize=6
         )
 
-        ## Calendar plots
-        fig.add_subplot(grid[13:19,:3], frameon=False)
-        import_and_plot_img('{1}/Graphs/{2}/pm1/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'calendar_plot'))
-
-        fig.add_subplot(grid[13:19,3:6], frameon=False)
-        plt.title('Average (MEAN) Daily PM Concentration', y=graph_title_position,fontsize=graph_title_size)
-        import_and_plot_img('{1}/Graphs/{2}/pm25/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'calendar_plot'))
-
-        fig.add_subplot(grid[13:19,6:9], frameon=False)
-        import_and_plot_img('{1}/Graphs/{2}/pm10/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'calendar_plot'))
-
-        # Caption
-        fig.add_subplot(grid[19:20,:], frameon=False)
-        plt.grid(0);plt.yticks([]);plt.xticks([])
-        plt.text(
-            x=0, y=10, 
-            s='\n\
-            Average daily concentration of PM1, PM2.5, and PM10. '.translate(SUB)+ 
-            'Dotted lines on the color scale represent NAAQS (upper limit) and WHO (lower limit)\n\
-            thresholds for healthy 24 h average PM concentrations. No official standards exist for PM1, so they are arbitrarily set here at 5 μg/m3 (upper\n\
-            limit) and 2 μg/m3 (lower limit). No color indicates insufficient data to calculate a mean.',
-            fontsize=6
-        )
         plt.text(
             x=0.28, y=0,
             s='\n\
@@ -190,25 +187,27 @@ class ReportGenerator:
         plt.title('Particulate Matter Monthly Summary', fontsize=14, weight='bold', y=0.86)
         plt.suptitle('  {0} {1}: {2}'.format(dic_month[self.month], self.year, self.sn), fontsize=10, y=0.866)
         
-        ## Polar plots
-        fig2.add_subplot(grid2[1:8,:3], frameon=False)
-        import_and_plot_img('{1}/Graphs/{2}/pm1/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'wind_polar_plot'))
+        ## Calendar plots
+        fig2.add_subplot(grid2[1:7,:3], frameon=False)
+        import_and_plot_img('{1}/Graphs/{2}/pm1/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'calendar_plot'))
 
-        fig2.add_subplot(grid2[1:8,3:6], frameon=False)
-        plt.title('PM and Wind', y=graph_title_position,fontsize=graph_title_size)
-        import_and_plot_img('{1}/Graphs/{2}/pm25/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'wind_polar_plot'))
+        fig2.add_subplot(grid2[1:7,3:6], frameon=False)
+        plt.title('Average (MEAN) Daily PM Concentration', y=graph_title_position,fontsize=graph_title_size)
+        import_and_plot_img('{1}/Graphs/{2}/pm25/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'calendar_plot'))
 
-        fig2.add_subplot(grid2[1:8,6:9], frameon=False)
-        import_and_plot_img('{1}/Graphs/{2}/pm10/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'wind_polar_plot'))
+        fig2.add_subplot(grid2[1:7,6:9], frameon=False)
+        import_and_plot_img('{1}/Graphs/{2}/pm10/{0}_{1}_{2}.jpeg'.format(self.sn, self.year_month, 'calendar_plot'))
+
         # Caption
         fig2.add_subplot(grid2[7:8,:], frameon=False)
         plt.grid(0);plt.yticks([]);plt.xticks([])
         plt.text(
-            x=0, y=0, 
+            x=0, y=10, 
             s='\n\
-            Polar plots indicate pollutant concentrations as a function of wind speed and wind direction. Pollutant concentrations (color scale) are\n\
-            plotted on a compass, with concentric circles representing wind speed (calm at the center, high wind speeds on the outside). Warm colors\n\
-            indicate the direction of likely sources of PM relative to the location of the sensor.',
+            Average daily concentration of PM1, PM2.5, and PM10. '.translate(SUB)+ 
+            'Dotted lines on the color scale represent NAAQS (upper limit) and WHO (lower limit)\n\
+            thresholds for healthy 24 h average PM concentrations. No official standards exist for PM1, so they are arbitrarily set here at 5 μg/m3 (upper\n\
+            limit) and 2 μg/m3 (lower limit). No color indicates insufficient data to calculate a mean.',
             fontsize=6
         )
 
@@ -294,11 +293,10 @@ if __name__=='__main__':
     year, month = int(sys.argv[1]), int(sys.argv[2])
     # Import sensor data from pickles
     di = DataImporter(year=year, month=month)
-    sn_list, sn_dict = di.get_PM_data()
+    sn_list = di.get_installed_sensor_list()
 
     # generate reports for each sensor
     for sn in sn_list:
-        if not sn_dict[sn].empty:
-            generate_report(month, year, sn)
-            print(f"Finished report {sn}.")
+        generate_report(month, year, sn)
+        print(f"Finished report {sn}.")
     # generate_report(6, 2022, "MOD-PM-00217")

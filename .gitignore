@@ -12,6 +12,9 @@ pull_data.ipynb
 zips
 *.DS_Store
 
+# Ignore polar generated pngs
+utils/*.png
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
