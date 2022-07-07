@@ -37,3 +37,7 @@ sleep 5
 # send automatic email with zip file
 python3 send_email.py $year $month
 sleep 2
+
+# delete year-month folder and zip files locally
+rm -rf $year-$month
+rm -rf zips/*
