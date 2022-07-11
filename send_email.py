@@ -4,9 +4,11 @@ Project: Air Partners
 
 Script for sending emails with attachments from a gmail account.
 """
-
-import smtplib, sys
+import smtplib
+import sys
 import pandas as pd
+import datetime as dt
+from dateutil.relativedelta import relativedelta
 from pathlib import Path
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
@@ -60,15 +62,23 @@ def send_mail(send_from, send_to, subject, message, files=[],
     smtp.sendmail(send_from, send_to, msg.as_string())
     smtp.quit()
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     # get year and month from sys args
     year, month = int(sys.argv[1]), int(sys.argv[2])
-    year_month = str(year) + '-0' + str(month) if month<=9 else str(year) + '-' + str(month)
-    # get last month and year, will send a request for file to be deleted
-    month_p = month-1 if month != 1 else 12
-    year_p = year if month != 1 else year-1
-    year_month_prev = str(year_p) + '-0' + str(month_p) if month_p<=9 else str(year_p) + '-' + str(month_p)
+
+    # Convert to date object
+    date_obj = dt.date(year, month, 1)
+    # format strings for current and previous month
+    year_month = date_obj.isoformat()[:-3]
+    year_month_prev = (date_obj - relativedelta(months=1)).isoformat()[:-3]
+
+    # delete last month's zip if it exists
+    try:
+        delete_zip(year_month_prev)
+    except:
+        print(f"No zip file named {year_month_prev} found.")
+
     # create zip file
     zip_directory(year_month)
     # upload zip file to Dropbox; if file already exists, replace it
@@ -77,14 +87,8 @@ if __name__ == '__main__':
     except:
         delete_zip(year_month)
         upload_zip(year_month)
-    # delete last month's zip if it exists
-    try:
-        delete_zip(year_month_prev)
-    except:
-        print(f"No zip file named {year_month_prev} found.")
 
-    smtp_server = "smtp.gmail.com" 
-    sender_email = "theautomatedemail@gmail.com"  #replace with airpartners email
+    # Get password from saved location
     with open('app_password.txt', 'r') as f:
         password = f.read()
 
@@ -93,11 +97,11 @@ if __name__ == '__main__':
     df = df.loc[df['Status of Subscription'] == 'Subbed']
     mailing_list = df['Emails'].tolist()
 
-    send_mail(send_from=sender_email, send_to=mailing_list, subject=f'Air Quality Reports {year_month}',
-            message='These reports have been automatically generated based on last month\'s air quality data. '+
-            'If you want to know more about how these visuals were made, please visit airpartners.org.\n\n' +
-            'Please note that at the end of this month, the current zip file will be deleted and replaced' +
-            ' with this month\'s data.\n\n' +
-            'https://www.dropbox.com/sh/spwnq0yqvjvewax/AADk0c2Tum-7p_1ul6xiKzrPa?dl=0 \n\n' +
-            'Best regards,\nAir Partners',
-            server=smtp_server, username=sender_email, password=password)
+    send_mail(send_from='theautomatedemail@gmail.com', send_to=mailing_list, subject=f'Air Quality Reports {year_month}',
+              message='These reports have been automatically generated based on last month\'s air quality data. ' +
+              'If you want to know more about how these visuals were made, please visit airpartners.org.\n\n' +
+              'Please note that at the end of this month, the current zip file will be deleted and replaced' +
+              ' with this month\'s data.\n\n' +
+              'https://www.dropbox.com/sh/spwnq0yqvjvewax/AADk0c2Tum-7p_1ul6xiKzrPa?dl=0 \n\n' +
+              'Best regards,\nAir Partners',
+              server='smtp.gmail.com', username='theautomatedemail@gmail.com', password=password)

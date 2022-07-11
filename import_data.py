@@ -4,16 +4,12 @@ Project: Air Partners
 
 Script for importing necessary data for air quality analysis for static reporting.
 """
-
-from re import I
-from sqlite3 import Timestamp
 import sys
 import pandas as pd
 from calendar import monthrange
 import quantaq
 from quantaq.utils import to_dataframe
 from datetime import datetime
-from data_analysis.iem import fetch_data
 import data_analysis.quantaq_pipeline as qp
 from pull_from_drive import pull_sensor_install_data
 from utils.create_maps import main
@@ -22,6 +18,7 @@ with open('token.txt', 'r') as f:
     token = f.read()
 
 client = quantaq.QuantAQAPIClient(token)
+
 
 class DataImporter(object):
     """
@@ -45,8 +42,10 @@ class DataImporter(object):
         :returns: A filtered list of sensor information
         :returns: A list of all sensor information
         """
-        devices_raw = to_dataframe(client.devices.list(filter="city,like,%_oxbury%"))
-        devices_simplified = devices_raw.iloc[:,[4,3,11,15,16,5,7,8,10,12]]
+        devices_raw = to_dataframe(
+            client.devices.list(filter="city,like,%_oxbury%"))
+        devices_simplified = devices_raw.iloc[:, [
+            4, 3, 11, 15, 16, 5, 7, 8, 10, 12]]
         return devices_simplified, devices_raw
 
     def _get_install_data(self):
@@ -57,9 +56,13 @@ class DataImporter(object):
         """
         pull_sensor_install_data()
         df = pd.read_csv('sensor_install_data.csv')
-        df = df[["Timestamp", "Select action", "Sensor serial number (SN)", "Date", "Time", "Location site", "Is the sensor being installed indoors or outdoors?"]]
+        df = df[["Timestamp", "Select action", "Sensor serial number (SN)", "Date", "Time",
+                 "Location site", "Is the sensor being installed indoors or outdoors?"]]
 
-        df = df.rename(columns={'Sensor serial number (SN)' : 'sn', 'Select action' : 'action', 'Is the sensor being installed indoors or outdoors?' : 'indoors_outdoors'})
+        df = df.rename(columns={'Sensor serial number (SN)': 'sn',
+                                'Select action': 'action',
+                                'Is the sensor being installed indoors or outdoors?': 'indoors_outdoors'}
+                                )
         df['action'] = df['action'].str.extract(r'sensor (.*)$')
 
         return df
@@ -78,9 +81,10 @@ class DataImporter(object):
         active_sensors = []
 
         for row in df.itertuples():
-            if row.sn not in active_sensors and row.action == 'installation' and pd.to_datetime(row.Date) < end_date and row.indoors_outdoors == 'Outdoors':
+            if (row.sn not in active_sensors and row.action == 'installation' and pd.to_datetime(row.Date) < end_date
+                    and row.indoors_outdoors == 'Outdoors'):
                 active_sensors.append(row.sn)
-            elif row.sn in active_sensors and row.action == 'removal' and pd.to_datetime(row.Date) < start_date:
+            elif (row.sn in active_sensors and row.action == 'removal' and pd.to_datetime(row.Date) < start_date):
                 active_sensors.remove(row.sn)
 
         return active_sensors
@@ -104,15 +108,14 @@ class DataImporter(object):
         # Otherwise download it from API
         except:
             try:
-                # Pull dataframe from API, will return the dataframe and will also pickle the results for you to open and use later
+                # Pull dataframe from API, will return the dataframe and save it as a pickle file
                 df = mod_handler.from_api(sensor_sn)
             except:
                 # If there is a request protocol error, create an empty dataframe (temp solution)
                 df = pd.DataFrame()
 
-        
         install_df = self._get_install_data
-        
+
         # Only look at rows pertaining to the current sensor
         install_df = install_df.loc[install_df['sn'] == sensor_sn]
 
@@ -133,7 +136,7 @@ class DataImporter(object):
 
         :param year_int_YYYY: (int) The year
         :param month_int: (int) The month
-        
+
         :returns: DateTime object for the first day of the month
         :returns: DateTime object for the last day of the month
         """
@@ -149,7 +152,7 @@ class DataImporter(object):
         Collects data from all sensors for the month.
 
         :returns: A list of all sensors available from QuantAQ API
-        :returns: A dictionary with sensor serial numbers as keys and pandas dataframes containing sensor data as values
+        :returns: A dictionary of sensor serial number keys and pandas dataframes containing sensor data
         """
         sn_list = self.get_installed_sensor_list()
         sn_count = len(sn_list)
@@ -159,12 +162,13 @@ class DataImporter(object):
         # For every sensor, download DataFrame with data of that sensor and insert it into dictionary
         for sn in sn_list:
             # Print out sensor downloading progress
-            print('\rSensor Progress: {0} / {1}\n'.format(sensor_count, sn_count), end='', flush=True)
+            print(
+                '\rSensor Progress: {0} / {1}\n'.format(sensor_count, sn_count), end='', flush=True)
             # If sensor data already exists in pickle file, use that
             df = self._data_month(sn)
             # Add new dataframe to dictionary
             sn_dict[sn] = df
-            sensor_count+=1
+            sensor_count += 1
         print('\nDone!')
         return sn_list, sn_dict
 

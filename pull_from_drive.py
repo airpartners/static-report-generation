@@ -4,7 +4,6 @@ Project: Air Partners
 
 Script for pulling form data from google drives.
 """
-
 from __future__ import print_function
 import os.path
 from google.auth.transport.requests import Request
@@ -15,6 +14,7 @@ from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive']
+
 
 def pull_sensor_install_data():
     """
@@ -41,16 +41,16 @@ def pull_sensor_install_data():
     try:
         service = build('drive', 'v3', credentials=creds)
 
-        items = {'maillist' : '17GP7PlQYxr1A1_1srrSDpLjCplLztdHWG51XY2qZoVo',
-                 'sensor_install_data' : '15DDTqQkXqD16vCnOBBTz9mPUmVWnKywjxdNWF9N6Gcg'}
+        items = {'maillist': '17GP7PlQYxr1A1_1srrSDpLjCplLztdHWG51XY2qZoVo',
+                 'sensor_install_data': '15DDTqQkXqD16vCnOBBTz9mPUmVWnKywjxdNWF9N6Gcg'}
 
         print('Pulling sensor install data from google drive...')
         for key in items:
             # Call the Drive v3 API
-            info = service.files().export(fileId=items[key], mimeType='text/csv').execute()
+            info = service.files().export(
+                fileId=items[key], mimeType='text/csv').execute()
             with open(f'{key}.csv', 'wb') as f:
                 f.write(info)
-
 
     except HttpError as error:
         # TODO(developer) - Handle errors from drive API.
