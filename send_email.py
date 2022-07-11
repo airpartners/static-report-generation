@@ -64,40 +64,38 @@ def send_mail(send_from, send_to, subject, message, files=[],
 
 
 if __name__ == '__main__':
-    # # get year and month from sys args
-    # year, month = int(sys.argv[1]), int(sys.argv[2])
+    # get year and month from sys args
+    year, month = int(sys.argv[1]), int(sys.argv[2])
 
-    # # Convert to date object
-    # date_obj = dt.date(year, month, 1)
-    # # format strings for current and previous month
-    # year_month = date_obj.isoformat()[:-3]
-    # year_month_prev = (date_obj - relativedelta(months=1)).isoformat()[:-3]
+    # Convert to date object
+    date_obj = dt.date(year, month, 1)
+    # format strings for current and previous month
+    year_month = date_obj.isoformat()[:-3]
+    year_month_prev = (date_obj - relativedelta(months=1)).isoformat()[:-3]
 
-    # # delete last month's zip if it exists
-    # try:
-    #     delete_zip(year_month_prev)
-    # except:
-    #     print(f"No zip file named {year_month_prev} found.")
+    # delete last month's zip if it exists
+    try:
+        delete_zip(year_month_prev)
+    except:
+        print(f"No zip file named {year_month_prev} found.")
 
-    # # create zip file
-    # zip_directory(year_month)
-    # # upload zip file to Dropbox; if file already exists, replace it
-    # try:
-    #     upload_zip(year_month)
-    # except:
-    #     delete_zip(year_month)
-    #     upload_zip(year_month)
+    # create zip file
+    zip_directory(year_month)
+    # upload zip file to Dropbox; if file already exists, replace it
+    try:
+        upload_zip(year_month)
+    except:
+        delete_zip(year_month)
+        upload_zip(year_month)
 
     # Get password from saved location
     with open('app_password.txt', 'r') as f:
         password = f.read()
 
     # Get list of subscribed emails to send to
-    # df = pd.read_csv('maillist.csv')
-    # df = df.loc[df['Status of Subscription'] == 'Subbed']
-    # mailing_list = df['Emails'].tolist()
-
-    mailing_list = ['adecandia@olin.edu']
+    df = pd.read_csv('maillist.csv')
+    df = df.loc[df['Status of Subscription'] == 'Subbed']
+    mailing_list = df['Emails'].tolist()
 
     send_mail(send_from='theautomatedemail@gmail.com',
               send_to=mailing_list,
