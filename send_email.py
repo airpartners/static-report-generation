@@ -99,7 +99,7 @@ if __name__ == '__main__':
 
     send_mail(send_from='theautomatedemail@gmail.com',
               send_to=mailing_list,
-              subject=f'Air Quality Reports ',#{year_month}',
+              subject=f'Air Quality Reports {year_month}',
               message="""
               <a href="https://www.dropbox.com/sh/spwnq0yqvjvewax/AADk0c2Tum-7p_1ul6xiKzrPa?dl=0">These reports</a> 
               have been automatically generated based on last month's air quality data.

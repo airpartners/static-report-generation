@@ -76,7 +76,6 @@ class DataImporter(object):
         start_date, end_date = self._get_start_end_dates(self.year, self.month)
 
         df = self._get_install_data()
-        print(df)
 
         active_sensors = []
 
