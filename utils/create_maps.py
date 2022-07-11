@@ -52,8 +52,9 @@ def show(df, sn_list):
         
         
         # creates image twice in case figure not fully complete by first iteration
+        fig.write_image(f'_images/locs/{sn}.png', format='png', engine="kaleido")
         fig.write_image(f'_images/locs/{sn}.png')
-        fig.write_image(f'_images/locs/{sn}.png')
+        print(f'Finished {sn} image.')
 
 def main(sn_list, sn_dict):
     df = get_lats_and_longs(sn_list, sn_dict)

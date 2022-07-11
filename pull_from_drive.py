@@ -1,13 +1,17 @@
+"""
+Author: Andrew DeCandia
+Project: Air Partners
+
+Script for pulling form data from google drives.
+"""
+
 from __future__ import print_function
-
 import os.path
-
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-import csv
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -37,20 +41,16 @@ def pull_sensor_install_data():
     try:
         service = build('drive', 'v3', credentials=creds)
 
-        # Call the Drive v3 API
-        results = service.files().list(
-            pageSize=10, fields="nextPageToken, files(id, name)").execute()
-        items = results.get('files', [])
+        items = {'maillist' : '17GP7PlQYxr1A1_1srrSDpLjCplLztdHWG51XY2qZoVo',
+                 'sensor_install_data' : '15DDTqQkXqD16vCnOBBTz9mPUmVWnKywjxdNWF9N6Gcg'}
 
-        if not items:
-            print('No files found.')
-            return
-        for item in items:
-            if item['name'] == 'Sensor Deployment Form (Responses)':
-                print('Pulling sensor install data from google drive...')
-                info = service.files().export(fileId=item['id'], mimeType='text/csv').execute()
-                with open('sensor_install_data.csv', 'wb') as f:
-                    f.write(info)
+        print('Pulling sensor install data from google drive...')
+        for key in items:
+            # Call the Drive v3 API
+            info = service.files().export(fileId=items[key], mimeType='text/csv').execute()
+            with open(f'{key}.csv', 'wb') as f:
+                f.write(info)
+
 
     except HttpError as error:
         # TODO(developer) - Handle errors from drive API.

@@ -11,6 +11,7 @@ pull_data.ipynb
 2022-04
 zips
 *.DS_Store
+*.csv
 
 # Ignore polar generated pngs
 utils/*.png

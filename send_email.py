@@ -1,4 +1,12 @@
+"""
+Author: Andrew DeCandia
+Project: Air Partners
+
+Script for sending emails with attachments from a gmail account.
+"""
+
 import smtplib, sys
+import pandas as pd
 from pathlib import Path
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
@@ -80,7 +88,12 @@ if __name__ == '__main__':
     with open('app_password.txt', 'r') as f:
         password = f.read()
 
-    send_mail(send_from=sender_email, send_to=['ndhulipala@olin.edu'], subject=f'Air Quality Reports {year_month}',
+    # Get list of subscribed emails to send to
+    df = pd.read_csv('maillist.csv')
+    df = df.loc[df['Status of Subscription'] == 'Subbed']
+    mailing_list = df['Emails'].tolist()
+
+    send_mail(send_from=sender_email, send_to=mailing_list, subject=f'Air Quality Reports {year_month}',
             message='These reports have been automatically generated based on last month\'s air quality data. '+
             'If you want to know more about how these visuals were made, please visit airpartners.org.\n\n' +
             'Please note that at the end of this month, the current zip file will be deleted and replaced' +

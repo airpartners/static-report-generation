@@ -1,10 +1,12 @@
 """
-Author: Neel Dhulipala, Andrew DeCandia
+Author: Andrew DeCandia, Neel Dhulipala
 Project: Air Partners
 
 Script for importing necessary data for air quality analysis for static reporting.
 """
 
+from re import I
+from sqlite3 import Timestamp
 import sys
 import pandas as pd
 from calendar import monthrange
@@ -47,6 +49,21 @@ class DataImporter(object):
         devices_simplified = devices_raw.iloc[:,[4,3,11,15,16,5,7,8,10,12]]
         return devices_simplified, devices_raw
 
+    def _get_install_data(self):
+        """
+        Pull sensor installation notes from google drive and modifies dataframe for ease of use.
+
+        :returns: a dataframe of sensor install data
+        """
+        pull_sensor_install_data()
+        df = pd.read_csv('sensor_install_data.csv')
+        df = df[["Timestamp", "Select action", "Sensor serial number (SN)", "Date", "Time", "Location site", "Is the sensor being installed indoors or outdoors?"]]
+
+        df = df.rename(columns={'Sensor serial number (SN)' : 'sn', 'Select action' : 'action', 'Is the sensor being installed indoors or outdoors?' : 'indoors_outdoors'})
+        df['action'] = df['action'].str.extract(r'sensor (.*)$')
+
+        return df
+
     def get_installed_sensor_list(self):
         """
         Pull sensor installation notes from google drive and create list of all sensors with data for the given month.
@@ -55,20 +72,13 @@ class DataImporter(object):
         """
         start_date, end_date = self._get_start_end_dates(self.year, self.month)
 
-
-        pull_sensor_install_data()
-        df = pd.read_csv('sensor_install_data.csv')
-        df = df[["Timestamp", "Select action", "Sensor serial number (SN)", "Date", "Time", "Location site"]]
-
-        df = df.rename(columns={'Sensor serial number (SN)' : 'sn', 'Select action' : 'action'})
-        df['action'] = df['action'].str.extract(r'sensor (.*)$')
-
+        df = self._get_install_data()
         print(df)
 
         active_sensors = []
 
         for row in df.itertuples():
-            if row.sn not in active_sensors and row.action == 'installation' and pd.to_datetime(row.Date) < end_date:
+            if row.sn not in active_sensors and row.action == 'installation' and pd.to_datetime(row.Date) < end_date and row.indoors_outdoors == 'Outdoors':
                 active_sensors.append(row.sn)
             elif row.sn in active_sensors and row.action == 'removal' and pd.to_datetime(row.Date) < start_date:
                 active_sensors.remove(row.sn)
@@ -89,7 +99,6 @@ class DataImporter(object):
 
         # Check if pckl file exists, pull data otherwise
         try:
-            start_date, end_date = self._get_start_end_dates(self.year, self.month)
             df = mod_handler.load_df(sensor_sn, start_date, end_date)
             print("\r Data pulled from Pickle file", flush=True)
         # Otherwise download it from API
@@ -100,6 +109,22 @@ class DataImporter(object):
             except:
                 # If there is a request protocol error, create an empty dataframe (temp solution)
                 df = pd.DataFrame()
+
+        
+        install_df = self._get_install_data
+        
+        # Only look at rows pertaining to the current sensor
+        install_df = install_df.loc[install_df['sn'] == sensor_sn]
+
+        # Remove any data in the dataframe that was collected when the sensor was not installed
+        for row in install_df.itertuples():
+            when = pd.to_datetime(row.Date + ' ' + row.Time)
+            if when > start_date and when < end_date:
+                if row.action == 'installation':
+                    df = df.loc[df['timestamp'] > when]
+                elif row.action == 'removal':
+                    df = df.loc[df['timestamp'] < when]
+
         return df
 
     def _get_start_end_dates(self, year_int_YYYY, month_int):
