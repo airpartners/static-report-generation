@@ -97,8 +97,9 @@ if __name__ == '__main__':
     df = df.loc[df['Status of Subscription'] == 'Subbed']
     mailing_list = df['Emails'].tolist()
 
-    send_mail(send_from='theautomatedemail@gmail.com',
-              send_to=mailing_list,
+    for email in mailing_list:
+        send_mail(send_from='theautomatedemail@gmail.com',
+              send_to=[email],
               subject=f'Air Quality Reports {year_month}',
               message="""
               <a href="https://www.dropbox.com/sh/spwnq0yqvjvewax/AADk0c2Tum-7p_1ul6xiKzrPa?dl=0">These reports</a> 
