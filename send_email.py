@@ -97,13 +97,16 @@ if __name__ == '__main__':
     df = df.loc[df['Status of Subscription'] == 'Subbed']
     mailing_list = df['Emails'].tolist()
 
+    # Send emails individually to preserve anonymity of subscribers
     for email in mailing_list:
         send_mail(send_from='theautomatedemail@gmail.com',
               send_to=[email],
               subject=f'Air Quality Reports {year_month}',
               message="""
               <a href="https://www.dropbox.com/sh/spwnq0yqvjvewax/AADk0c2Tum-7p_1ul6xiKzrPa?dl=0">These reports</a> 
-              have been automatically generated based on last month's air quality data.
+              have been automatically generated based on last month's air quality data. To access the reports, unzip 
+              the folder and navigate to reports then pdfs. In graphs we have included high res images of the graphs 
+              used in the reports for use in presentations or other media.<br>
               If you want to know more about how these visuals were made, please visit airpartners.org.<br><br>
               Please note that at the end of this month, the current zip file will be deleted and replaced with this 
               month's data.<br><br>
