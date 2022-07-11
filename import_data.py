@@ -114,7 +114,7 @@ class DataImporter(object):
                 # If there is a request protocol error, create an empty dataframe (temp solution)
                 df = pd.DataFrame()
 
-        install_df = self._get_install_data
+        install_df = self._get_install_data()
 
         # Only look at rows pertaining to the current sensor
         install_df = install_df.loc[install_df['sn'] == sensor_sn]
