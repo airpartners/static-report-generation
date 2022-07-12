@@ -99,7 +99,7 @@ if __name__ == '__main__':
 
     # Send emails individually to preserve anonymity of subscribers
     for email in mailing_list:
-        send_mail(send_from='theautomatedemail@gmail.com',
+        send_mail(send_from= "Air Partners Reports <reports@airpartners.org>",
               send_to=[email],
               subject=f'Air Quality Reports {year_month}',
               message="""
@@ -113,4 +113,4 @@ if __name__ == '__main__':
               Long Link:<br>https://www.dropbox.com/sh/spwnq0yqvjvewax/AADk0c2Tum-7p_1ul6xiKzrPa?dl=0<br><br>
               Best regards,<br>Air Partners<br><br><br>
               <a href="https://forms.gle/z9jPc8QNVRCCyChQ7">Unsubscribe</a>""",
-              server='smtp.gmail.com', username='theautomatedemail@gmail.com', password=password)
+              server='smtp.gmail.com', username='airpartners@airpartners.org', password=password)
