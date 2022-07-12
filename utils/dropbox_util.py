@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import json
 import sys
 import dropbox
 
@@ -18,12 +19,13 @@ class TransferData:
 
     https://stackoverflow.com/questions/70641660/how-do-you-get-and-use-a-refresh-token-for-the-dropbox-api-python-3-x/71794390#71794390
     """
-    def __init__(self, access_token):
-        self.access_token = access_token
+    def __init__(self):
+        with open('utils/dropbox_creds.json') as creds:
+            data = json.load(creds)
         self.dbx = dropbox.Dropbox(
-            app_key="mmjq6lg4l2r26ji",
-            app_secret="giev935reiteb53",
-            oauth2_refresh_token="sQsMlNWiaFUAAAAAAAAAAcqGo6p3GB4RBUwlcOYt0Bu66x8WY4wxkaQna3rksJaL"
+            app_key=data['app_key'],
+            app_secret=data['app_secret'],
+            oauth2_refresh_token=data['refresh_token']
         )
 
     def upload_file(self, file_from, file_to):
@@ -45,8 +47,7 @@ def upload_zip(year_month):
     """
     Uploads a zip specified by year_month to the Air Partners Dropbox account.
     """
-    access_token = 'sl.BKlKBM7pMWcicziqGA2GFl8io_RNkBA4dnvkk0gcvxeZxMQCkuFiW0XqZmlWWaQ-h9lDQvqlQx87ElYwTvdkPp4WP1Zb0eDlbaMr620YJuVjND5jXzHDbUFFXJS-76MTBHjctVPr'
-    transferData = TransferData(access_token)
+    transferData = TransferData()
 
     # zip file name
     zip_name = f'{year_month}.zip'
@@ -57,14 +58,14 @@ def upload_zip(year_month):
 
     # API v2 --> upload file to Dropbox
     transferData.upload_file(file_from, file_to)
+    print('file uploaded')
 
 def delete_zip(year_month_prev):
     """
     If it exists, deletes the zip file of reports from the previous month from
     the Air Partners Dropbox account.
     """
-    access_token = 'sl.BKlKBM7pMWcicziqGA2GFl8io_RNkBA4dnvkk0gcvxeZxMQCkuFiW0XqZmlWWaQ-h9lDQvqlQx87ElYwTvdkPp4WP1Zb0eDlbaMr620YJuVjND5jXzHDbUFFXJS-76MTBHjctVPr'
-    transferData = TransferData(access_token)
+    transferData = TransferData()
 
     # zip file name
     zip_name = f'{year_month_prev}.zip'
