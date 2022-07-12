@@ -158,7 +158,11 @@ class DataImporter(object):
         :returns: A list of all sensors available from QuantAQ API
         :returns: A dictionary of sensor serial number keys and pandas dataframes containing sensor data
         """
-        sn_list = self.get_installed_sensor_list()
+        # try to get installed sensor list; if there are no credentials, get all sensors
+        try:
+            sn_list = self.get_installed_sensor_list()
+        except:
+            sn_list = self.get_all_sensor_list()
         sn_count = len(sn_list)
         sn_dict = {}
 
