@@ -139,11 +139,16 @@ class DataImporter(object):
         :returns: DateTime object for the first day of the month
         :returns: DateTime object for the last day of the month
         """
-        # get number of days in month_int of that year
-        no_of_days = monthrange(year_int_YYYY, month_int)[1]
+        # get next month
+        next_month = month_int+1 if month_int!=12 else 1
+        # get next year
+        next_year = year_int_YYYY if next_month!=1 else year_int_YYYY+1
         # get start and end dates in type datetime
         start_date = datetime(year_int_YYYY, month_int, 1)
-        end_date = datetime(year_int_YYYY, month_int, no_of_days)
+        # end date defined as first day of next month since the cutoff for
+        # downloading data from API is midnight of that day, which means all
+        # of the last day of the previous month gets included
+        end_date = datetime(next_year, next_month, 1)
         return start_date, end_date
 
     def get_PM_data(self):
