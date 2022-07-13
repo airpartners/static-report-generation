@@ -19,7 +19,7 @@ After cloning the repo, there are a few steps to running the pipeline. First, ma
     
     python -V
 
-This pipeline requires a *ton* of libraries to run properly, which are all listed in `requirements.txt`. If you decide you want to use a virtual environment, [click here] for a basic tutorial on creating and activating it. Regardless, install the necessary libraries needed for the pipeline to work.
+This pipeline requires a *ton* of libraries to run properly, which are all listed in `requirements.txt`. If you decide you want to use a virtual environment, [click here](https://pythonbasics.org/virtualenv/) for a basic tutorial on creating and activating it. Regardless, install the necessary libraries needed for the pipeline to work.
 
     pip install -r requirements.txt
    
@@ -52,6 +52,6 @@ Then, execute the file.
     
 If every is working, your computer should start downloading data from the QuantAQ API and should print `Sensor Progress: 1/20`. Unfortunately, the QuantAQ API does take a long time to download data, and it make take up to 15 minutes to download all the data from one sensor. Once the pipeline finishes, you should have a folder containing reports for each sensor, all the graphs for each report, and `.pckl` files containing data from each sensor. 
 
-(Note that when the pipeline finishes running, you may get thrown exceptions in your terminal, even after the reports have been created. This will result from you not having the proper credentials to access the Air Partners Dropbox account/email account and can be ignored.)
+(Note that some functionality in our pipeline will not be accessible publicly, which may result in some exceptions being thrown. The reports will still render regardless.)
 
 
