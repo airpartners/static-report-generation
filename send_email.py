@@ -71,13 +71,6 @@ if __name__ == '__main__':
     date_obj = dt.date(year, month, 1)
     # format strings for current and previous month
     year_month = date_obj.isoformat()[:-3]
-    year_month_prev = (date_obj - relativedelta(months=1)).isoformat()[:-3]
-
-    # delete last month's zip if it exists
-    try:
-        delete_zip(year_month_prev)
-    except:
-        print(f"No zip file named {year_month_prev} found.")
 
     # create zip file
     zip_directory(year_month)

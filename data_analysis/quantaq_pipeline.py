@@ -1,6 +1,7 @@
 from sqlite3 import Timestamp
 from matplotlib.pyplot import axis
 import quantaq
+import datetime as dt
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 import os
@@ -73,8 +74,10 @@ class DataHandler:
         self.data_cols = [col.strip("\n") for col in data_cols]
         self.start = start
         self.end = end
-        # create year_month string for naming top directories
-        self.year_month = str(start.year) + '-0' + str(start.month) if start.month<=9 else str(start.year) + '-' + str(start.month)
+        # Convert to date object
+        date_obj = dt.date(start.year, start.month, 1)
+        # format strings for current and previous month
+        self.year_month = date_obj.isoformat()[:-3]
 
     def get_save_name(self, start=None, end=None, smoothed=True):
         """

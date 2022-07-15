@@ -79,10 +79,3 @@ def delete_zip(year_month_prev):
 if __name__ == '__main__':
     year_month = sys.argv[1]
     upload_zip(year_month)
-    if len(sys.argv) > 2:
-        year_month_prev = sys.argv[1]
-        # try deleting previous month; if it does not exist, throw exception and continue
-        try:
-            delete_zip(year_month_prev)
-        except:
-            print(f'No file from {year_month_prev} exists in Air Partners account.')

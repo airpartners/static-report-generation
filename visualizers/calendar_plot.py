@@ -11,7 +11,6 @@ import calendar
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-from datetime import date
 import seaborn as sns
 
 calendar.setfirstweekday(6) # Sunday is 1st day in US
@@ -159,7 +158,7 @@ class CalendarPlot(object):
         cbar = f.colorbar(matplotlib.cm.ScalarMappable(norm=norm, 
                                                 cmap='Spectral_r'), 
                                                 cax=cbar_ax)
-        cbar.set_label(label=f'{self.label} [μg/m³]', fontsize=12)
+        cbar.set_label(label=f'{self.label} [μg/m³]', fontsize=16)
         # Add dashed lines on colorbar representing key thresholds
         cbar.ax.hlines(self.high_thresh, 0, 2.5, colors='black', linestyles='dotted', linewidth=2)
         cbar.ax.hlines(self.low_thresh, 0, 2.5, colors='black', linestyles='dotted', linewidth=2)

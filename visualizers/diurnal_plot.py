@@ -157,11 +157,11 @@ class DiurnalPlot(object):
             axes.xaxis.set_major_locator(MaxNLocator(15.8)) 
             axes.legend()
             if weekday:
-                axes.set_ylabel(f"{label_dict[self.pm]} [μg/m³] Weekday", fontsize=15)
+                axes.set_ylabel(f"{label_dict[self.pm]} [μg/m³] Weekday", fontsize=18)
             else:
-                axes.set_ylabel(f"{label_dict[self.pm]} [μg/m³] Weekend", fontsize=15)
+                axes.set_ylabel(f"{label_dict[self.pm]} [μg/m³] Weekend", fontsize=18)
             # Change xticks to show regular time; xticks presented in intervals of step
-            step = 9
+            step = 15
             axes.set_xticks(np.arange(0, len(df_mean.index), step))
             times = [self._military_to_regular(time) for time in df_mean.index]
-            axes.set_xticklabels(times[::step], rotation=45, fontsize=12)
+            axes.set_xticklabels(times[::step], rotation=45, fontsize=15)

@@ -50,7 +50,7 @@ class Timeplot(object):
         fig_axs[plot_number].fill_between(ts, pm, 0, where=(self.df.inactive == 0), facecolor="limegreen", interpolate=True, alpha=1,label='Low: < {}'.format(threshold_lower))
         fig_axs[plot_number].fill_between(ts, pm, threshold_lower, where=(self.df.inactive == 0) & (pm >= threshold_lower), facecolor="gold", interpolate=False, alpha=1,label='Medium')
         fig_axs[plot_number].fill_between(ts, pm, threshold_upper, where=(pm >= threshold_upper), facecolor="orangered", interpolate=False, alpha=1,label='High: > {}'.format(threshold_upper))
-        fig_axs[plot_number].set_ylabel('{}\n[μg/m³]'.format(ylabel), fontsize=12)
+        fig_axs[plot_number].set_ylabel('{}\n[μg/m³]'.format(ylabel), fontsize=18)
         #fig_axs[plot_number].set_ylim(ylim)
         
         handles, labels = fig_axs[plot_number].get_legend_handles_labels()
@@ -69,7 +69,7 @@ class Timeplot(object):
     def show(self):
         _, axs = plt.subplots(3, sharex=True, sharey=False, figsize=(17,6))
         plt.subplots_adjust(hspace=.0)
-        plt.xticks(rotation=45)
+        plt.xticks(rotation=45, fontsize=15)
 
         # Check for inactive sensors
         self.detect_inactive_sensor(5)
