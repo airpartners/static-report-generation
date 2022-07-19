@@ -110,8 +110,12 @@ class DataImporter(object):
                 # Pull dataframe from API, will return the dataframe and save it as a pickle file
                 df = mod_handler.from_api(sensor_sn)
             except:
-                # If there is a request protocol error, create an empty dataframe (temp solution)
-                df = pd.DataFrame()
+                # If there is a request protocol error, return an empty dataframe (temp solution)
+                return pd.DataFrame()
+
+        # If dataframe comes back empty, return it
+        if df.empty:
+            return df
 
         install_df = self._get_install_data()
 
@@ -165,6 +169,7 @@ class DataImporter(object):
             sn_list = self.get_all_sensor_list()
         sn_count = len(sn_list)
         sn_dict = {}
+        print(sn_list)
 
         sensor_count = 1
         # For every sensor, download DataFrame with data of that sensor and insert it into dictionary

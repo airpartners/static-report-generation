@@ -309,6 +309,9 @@ if __name__=='__main__':
 
     # generate reports for each sensor
     for sn in sn_list:
-        generate_report(month, year, sn)
-        print(f"Finished report {sn}.")
+        try:
+            generate_report(month, year, sn)
+            print(f"Finished report {sn}.")
+        except:
+            print(f"No report generated {sn}.")
     # generate_report(6, 2022, "MOD-PM-00217")

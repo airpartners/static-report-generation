@@ -428,6 +428,7 @@ class ModPMHandler(DataHandler):
         :returns: cleaned dataframe
         """
         #replace timestamp info
+        print(df.columns)
         df = self.convert_timestamps(df)
 
         if raw:
@@ -449,7 +450,8 @@ class ModPMHandler(DataHandler):
             # Remove other unused columns from dataframe
             df = df.drop(['timestamp_local', 'url', 'opc_rh', 'opc_temp', 'pressure'], axis = 1)
         else:
-            df[['rh', 'temp']] = df.met.apply(pd.Series)
+            if not (set(['rh', 'temp']).issubset(df.columns)):
+                df[['rh', 'temp']] = df.met.apply(pd.Series)
             df = df.drop(['url', 'met', 'timestamp_local'], axis = 1)
 
         #drop duplicate rows. Timestamps don't properly get recognized as duplicates, so use data_cols.
