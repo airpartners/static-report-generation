@@ -173,7 +173,7 @@ class ReportGenerator:
         folders = f'{self.year_month}/Reports/Pictures/{self.sn}'
         Path(folders).mkdir(parents=True, exist_ok=True)
         # Save first page
-        plt.savefig('{1}/Reports/Pictures/{0}/{1}_{2}_pg_1.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)
+        plt.savefig('{1}/Reports/Pictures/{0}/{1}_{2}_pg_2.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)
         plt.close()
 
         ############### SECOND PAGE ####################
@@ -257,7 +257,7 @@ class ReportGenerator:
         )
 
         # Save second page
-        plt.savefig('{1}/Reports/Pictures/{0}/{1}_{2}_pg_2.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)
+        plt.savefig('{1}/Reports/Pictures/{0}/{1}_{2}_pg_1.jpeg'.format(self.sn,self.year_month,str('Report')), bbox_inches='tight',dpi = 300)
         plt.close()
 
 

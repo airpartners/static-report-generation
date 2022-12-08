@@ -13,6 +13,8 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import requests
 
+from utils.refresh_google_token import refreshToken
+
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
@@ -21,6 +23,8 @@ def pull_sensor_install_data():
     """
     Prints the names and ids of the first 10 files the user has access to.
     """
+    # After authorization flow has run for the first time, token must be refreshed
+    refreshToken()
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
